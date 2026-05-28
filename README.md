@@ -229,3 +229,100 @@ flowchart LR
     class CI,BUILD ci;
     class DEPLOY,OBS run;
 ```
+
+### 3.5 Main File Internals Visuals (Mermaid)
+
+#### A. `src/current_pipeline.py` (`run()` flow)
+```mermaid
+flowchart TD
+    S([Start run()]) --> SP[Create SparkSession]
+    SP --> RI[Read inspections parquet]
+    SP --> RA[Read assets parquet]
+    RI --> J[Left join on asset_id]
+    RA --> J
+    J --> F[Filter inspection_status != CANCELLED]
+    F --> T[Add processed_at timestamp]
+    T --> W[Write Delta to curated snapshot path]
+    W --> E([End])
+
+    classDef io fill:#E3F2FD,stroke:#1E88E5,stroke-width:2px,color:#0D47A1;
+    classDef trans fill:#E8F5E9,stroke:#43A047,stroke-width:2px,color:#1B5E20;
+    classDef out fill:#FFF3E0,stroke:#FB8C00,stroke-width:2px,color:#E65100;
+    class SP,RI,RA io;
+    class J,F,T trans;
+    class W out;
+```
+
+#### B. `src/proposed_dlt_pipeline.py` (DLT tables and methods)
+```mermaid
+flowchart TB
+    subgraph SILVER_FLOW["Function: silver_inspections()"]
+        B1[Read stream: bronze_inspections] --> B2[Expectation: asset_id not null]
+        B2 --> B3[Expectation: inspection_date not null]
+        B3 --> B4[Create inspector_key = sha2(email + country_code)]
+        B4 --> B5[Drop inspector_email]
+        B5 --> B6[Add updated_at timestamp]
+        B6 --> B7[Output DLT table: silver_inspections]
+    end
+
+    subgraph GOLD_FLOW["Function: gold_asset_risk_kpi()"]
+        G1[Read DLT table: silver_inspections] --> G3[Inner join on asset_id]
+        G2[Read table: silver_assets] --> G3
+        G3 --> G4[Group by client_id, asset_id, criticality_level]
+        G4 --> G5[Aggregate count inspection_id]
+        G5 --> G6[Aggregate avg non_conformity_score]
+        G6 --> G7[Rename final KPI columns]
+        G7 --> G8[Output DLT table: gold_asset_risk_kpi]
+    end
+
+    classDef silver fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92;
+    classDef gold fill:#FFF8E1,stroke:#F9A825,stroke-width:2px,color:#F57F17;
+    class B1,B2,B3,B4,B5,B6,B7 silver;
+    class G1,G2,G3,G4,G5,G6,G7,G8 gold;
+```
+
+#### C. `src/proposed_data_quality_checks.sql` (query checks)
+```mermaid
+flowchart LR
+    Q1[Check 1: Freshness] --> R1{MAX updated_at >= now - 1 day}
+    R1 -->|Yes| P1[PASS]
+    R1 -->|No| F1[FAIL]
+
+    Q2[Check 2: Null keys] --> R2[Count rows where client_id or asset_id is null]
+    R2 --> A2[Alert if count > 0]
+
+    Q3[Check 3: Score threshold] --> R3[Count rows where avg_non_conformity_score < 0 or > 100]
+    R3 --> A3[Alert if count > 0]
+
+    classDef check fill:#E0F7FA,stroke:#00838F,stroke-width:2px,color:#004D40;
+    classDef ok fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1B5E20;
+    classDef bad fill:#FFEBEE,stroke:#C62828,stroke-width:2px,color:#B71C1C;
+    classDef act fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px,color:#E65100;
+    class Q1,Q2,Q3,R1,R2,R3 check;
+    class P1 ok;
+    class F1 bad;
+    class A2,A3 act;
+```
+
+#### D. `src/api_contract_example.json` (contract structure)
+```mermaid
+mindmap
+  root((client_asset_risk_kpi contract))
+    Metadata
+      product_name
+      version
+      owner_team
+    SLA
+      refresh_frequency daily
+      availability 99.5%
+    Fields
+      client_id string
+      asset_id string
+      criticality_level string
+      inspection_count long
+      avg_non_conformity_score double
+      updated_at timestamp
+    Security
+      contains_pii false
+      access_policy rbac_client_scope
+```
