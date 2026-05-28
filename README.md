@@ -31,7 +31,7 @@ Overall assessment: **High potential**, especially for monetizable B2B analytics
 
 ### 1.4 Business Visuals (Mermaid)
 ```mermaid
-flowchart LR
+flowchart TB
     A[Field Inspection and Testing] --> B[Reports and Measurements]
     B --> C[Compliance Evidence]
     C --> D[Client Risk Recommendations]
@@ -45,11 +45,11 @@ flowchart LR
 ```
 
 ```mermaid
-flowchart LR
+flowchart TB
     R23["2023 Revenue: 1308.5M EUR"] --> R24["2024 Revenue: 1476.6M EUR"]
-    E23["2023 EBITDA: 223.0M EUR"] --> E24["2024 EBITDA: 306.4M EUR"]
     R24 --> G1["Revenue Growth: +12.8%"]
-    E24 --> G2["EBITDA Margin: 17.0% -> 20.7%"]
+    E23["2023 EBITDA: 223.0M EUR"] --> E24["2024 EBITDA: 306.4M EUR"]
+    E24 --> G2["EBITDA Margin: 17.0% to 20.7%"]
 
     classDef revenue fill:#E8EAF6,stroke:#3949AB,stroke-width:2px,color:#1A237E;
     classDef ebitda fill:#E0F7FA,stroke:#00838F,stroke-width:2px,color:#004D40;
@@ -104,18 +104,18 @@ Current stack direction in job posts and profiles indicates:
 
 ### 2.4 Architecture Visuals (Mermaid)
 ```mermaid
-flowchart LR
+flowchart TB
     subgraph S1[Data Sources]
-        ERP[ERP]
-        CRM[CRM]
+        ERP[ERP and Finance]
+        CRM[CRM and Sales]
         IOT[IoT Sensors]
         APP[Inspection Apps]
-        EXT[External Regulatory Data]
+        EXT[External Data]
     end
 
     subgraph S2[Ingestion]
         CDC[CDC Connectors]
-        BATCH[Batch ELT]
+        BATCH[Batch ELT Jobs]
         STREAM[Kafka Streams]
     end
 
@@ -126,8 +126,8 @@ flowchart LR
     end
 
     subgraph S4[Consumption]
-        BI[Power BI and Databricks SQL]
-        API[Client API Products]
+        BI[BI Dashboards]
+        API[Client APIs]
         GENAI[GenAI Assistant]
     end
 
@@ -214,7 +214,7 @@ See files:
 
 ### 3.4 Engineering Delivery Visual (Mermaid)
 ```mermaid
-flowchart LR
+flowchart TB
     DEV[Data Engineer Commit] --> CI[CI: Unit + SQL + DQ Tests]
     CI --> BUILD[Build Artifacts]
     BUILD --> DEPLOY[Deploy to Databricks Jobs/DLT]
@@ -259,7 +259,7 @@ flowchart TB
     subgraph SILVER_FLOW["Function silver_inspections"]
         B1["Read stream bronze_inspections"] --> B2["Expectation asset_id not null"]
         B2 --> B3["Expectation inspection_date not null"]
-        B3 --> B4["Create hashed inspector_key from email and country_code"]
+        B3 --> B4["Create hashed inspector_key"]
         B4 --> B5["Drop inspector_email column"]
         B5 --> B6["Add updated_at timestamp"]
         B6 --> B7["Output DLT table silver_inspections"]
@@ -268,7 +268,7 @@ flowchart TB
     subgraph GOLD_FLOW["Function gold_asset_risk_kpi"]
         G1["Read DLT table silver_inspections"] --> G3["Inner join on asset_id"]
         G2["Read table silver_assets"] --> G3
-        G3 --> G4["Group by client_id asset_id criticality_level"]
+        G3 --> G4["Group by client and asset"]
         G4 --> G5["Aggregate inspection_id count"]
         G5 --> G6["Aggregate non_conformity_score average"]
         G6 --> G7["Rename final KPI columns"]
@@ -283,15 +283,15 @@ flowchart TB
 
 #### C. `src/proposed_data_quality_checks.sql` (query checks)
 ```mermaid
-flowchart LR
-    Q1[Check 1: Freshness] --> R1{MAX updated_at >= now - 1 day}
+flowchart TB
+    Q1[Check 1: Freshness] --> R1{Updated in last 1 day}
     R1 -->|Yes| P1[PASS]
     R1 -->|No| F1[FAIL]
 
-    Q2[Check 2: Null keys] --> R2[Count rows where client_id or asset_id is null]
+    Q2[Check 2: Null keys] --> R2[Count rows with null client_id or asset_id]
     R2 --> A2[Alert if count > 0]
 
-    Q3[Check 3: Score threshold] --> R3[Count rows where avg_non_conformity_score < 0 or > 100]
+    Q3[Check 3: Score threshold] --> R3[Count rows with score outside 0 to 100]
     R3 --> A3[Alert if count > 0]
 
     classDef check fill:#E0F7FA,stroke:#00838F,stroke-width:2px,color:#004D40;
@@ -306,7 +306,7 @@ flowchart LR
 
 #### D. `src/api_contract_example.json` (contract structure)
 ```mermaid
-flowchart LR
+flowchart TB
     ROOT["client_asset_risk_kpi contract"] --> M["Metadata"]
     ROOT --> S["SLA"]
     ROOT --> F["Fields"]
