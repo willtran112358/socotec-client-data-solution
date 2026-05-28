@@ -301,29 +301,51 @@ flowchart TB
     ROOT --> F["Fields"]
     ROOT --> SEC["Security"]
 
-    M --> M1["product_name"]
+    classDef root fill:#E8EAF6,stroke:#3949AB,stroke-width:2px,color:#1A237E;
+    classDef group fill:#E0F7FA,stroke:#00838F,stroke-width:2px,color:#004D40;
+    class ROOT root;
+    class M,S,F,SEC group;
+```
+
+```mermaid
+flowchart TB
+    M["Metadata"] --> M1["product_name"]
     M --> M2["version"]
     M --> M3["owner_team"]
 
-    S --> S1["refresh_frequency: daily"]
-    S --> S2["availability: 99.5%"]
+    S["SLA"] --> S1["refresh_frequency daily"]
+    S --> S2["availability 99.5%"]
 
-    F --> F1["client_id: string"]
-    F --> F2["asset_id: string"]
-    F --> F3["criticality_level: string"]
-    F --> F4["inspection_count: long"]
-    F --> F5["avg_non_conformity_score: double"]
-    F --> F6["updated_at: timestamp"]
-
-    SEC --> SC1["contains_pii: false"]
-    SEC --> SC2["access_policy: rbac_client_scope"]
-
-    classDef root fill:#E8EAF6,stroke:#3949AB,stroke-width:2px,color:#1A237E;
     classDef group fill:#E0F7FA,stroke:#00838F,stroke-width:2px,color:#004D40;
     classDef leaf fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px,color:#E65100;
-    class ROOT root;
-    class M,S,F,SEC group;
-    class M1,M2,M3,S1,S2,F1,F2,F3,F4,F5,F6,SC1,SC2 leaf;
+    class M,S group;
+    class M1,M2,M3,S1,S2 leaf;
+```
+
+```mermaid
+flowchart TB
+    F["Fields"] --> F1["client_id string"]
+    F --> F2["asset_id string"]
+    F --> F3["criticality_level string"]
+    F --> F4["inspection_count long"]
+    F --> F5["avg_non_conformity_score double"]
+    F --> F6["updated_at timestamp"]
+
+    classDef group fill:#E0F7FA,stroke:#00838F,stroke-width:2px,color:#004D40;
+    classDef leaf fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px,color:#E65100;
+    class F group;
+    class F1,F2,F3,F4,F5,F6 leaf;
+```
+
+```mermaid
+flowchart TB
+    SEC["Security"] --> SC1["contains_pii false"]
+    SEC --> SC2["access_policy rbac_client_scope"]
+
+    classDef group fill:#E0F7FA,stroke:#00838F,stroke-width:2px,color:#004D40;
+    classDef leaf fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px,color:#E65100;
+    class SEC group;
+    class SC1,SC2 leaf;
 ```
 
 ## 4) Data Model (DB Diagram)
