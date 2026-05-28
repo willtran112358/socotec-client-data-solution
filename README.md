@@ -325,3 +325,156 @@ flowchart TB
     class M,S,F,SEC group;
     class M1,M2,M3,S1,S2,F1,F2,F3,F4,F5,F6,SC1,SC2 leaf;
 ```
+
+## 4) Data Model (DB Diagram)
+
+This section visualizes the main business entities SOCOTEC can maintain to support client-facing analytics, compliance, and operations.
+
+### 4.1 Core Master Data (Customer, Site, Asset, Inspector)
+```mermaid
+erDiagram
+    CUSTOMER ||--o{ PROJECT : owns
+    PROJECT ||--o{ SITE : contains
+    SITE ||--o{ ASSET : hosts
+    CUSTOMER ||--o{ CONTRACT : signs
+    CONTRACT ||--o{ PROJECT : governs
+    INSPECTOR ||--o{ INSPECTION : performs
+
+    CUSTOMER {
+      string customer_id PK
+      string customer_name
+      string industry_type
+      string country_code
+      string account_tier
+    }
+
+    CONTRACT {
+      string contract_id PK
+      string customer_id FK
+      date start_date
+      date end_date
+      string sla_level
+      string status
+    }
+
+    PROJECT {
+      string project_id PK
+      string customer_id FK
+      string contract_id FK
+      string project_name
+      string project_type
+      string status
+    }
+
+    SITE {
+      string site_id PK
+      string project_id FK
+      string site_name
+      string region
+      float latitude
+      float longitude
+    }
+
+    ASSET {
+      string asset_id PK
+      string site_id FK
+      string asset_type
+      string criticality_level
+      date commissioning_date
+      string lifecycle_status
+    }
+
+    INSPECTOR {
+      string inspector_id PK
+      string inspector_key
+      string team_name
+      string certification_level
+      string country_code
+    }
+```
+
+### 4.2 Inspection, Findings, Actions, Compliance
+```mermaid
+erDiagram
+    ASSET ||--o{ INSPECTION : receives
+    INSPECTION ||--o{ INSPECTION_FINDING : produces
+    INSPECTION_FINDING ||--o{ WORK_ORDER : triggers
+    INSPECTION ||--o{ COMPLIANCE_RESULT : evaluates
+    REGULATION_RULE ||--o{ COMPLIANCE_RESULT : checks
+    WORK_ORDER ||--o{ WORK_ORDER_EVENT : tracks
+
+    INSPECTION {
+      string inspection_id PK
+      string asset_id FK
+      string inspector_id FK
+      datetime inspection_ts
+      string inspection_method
+      string inspection_status
+      double non_conformity_score
+    }
+
+    INSPECTION_FINDING {
+      string finding_id PK
+      string inspection_id FK
+      string severity_level
+      string finding_category
+      string description
+      bool is_critical
+    }
+
+    WORK_ORDER {
+      string work_order_id PK
+      string finding_id FK
+      string assigned_team
+      date due_date
+      string priority
+      string work_order_status
+    }
+
+    WORK_ORDER_EVENT {
+      string event_id PK
+      string work_order_id FK
+      datetime event_ts
+      string event_type
+      string event_note
+    }
+
+    REGULATION_RULE {
+      string rule_id PK
+      string country_code
+      string domain
+      string rule_code
+      string rule_version
+    }
+
+    COMPLIANCE_RESULT {
+      string compliance_result_id PK
+      string inspection_id FK
+      string rule_id FK
+      string compliance_status
+      string evidence_link
+      datetime evaluated_ts
+    }
+```
+
+### 4.3 Analytics and Client Reporting Layer
+```mermaid
+flowchart TB
+    INSPECTION[inspection facts] --> GOLD1[gold_asset_risk_kpi]
+    INSPECTION_FINDING[finding facts] --> GOLD1
+    WORK_ORDER[work order facts] --> GOLD2[gold_maintenance_sla_kpi]
+    COMPLIANCE_RESULT[compliance facts] --> GOLD3[gold_compliance_kpi]
+
+    GOLD1 --> DASH1[Power BI Asset Risk Dashboard]
+    GOLD2 --> DASH2[Operations SLA Dashboard]
+    GOLD3 --> DASH3[Compliance Dashboard]
+    GOLD1 --> API1[Client KPI API]
+    GOLD3 --> API2[Client Compliance API]
+
+    classDef fact fill:#E3F2FD,stroke:#1E88E5,stroke-width:2px,color:#0D47A1;
+    classDef gold fill:#F3E5F5,stroke:#8E24AA,stroke-width:2px,color:#4A148C;
+    classDef cons fill:#FFF3E0,stroke:#FB8C00,stroke-width:2px,color:#E65100;
+    class INSPECTION,INSPECTION_FINDING,WORK_ORDER,COMPLIANCE_RESULT fact;
+    class GOLD1,GOLD2,GOLD3 gold;
+    class DASH1,DASH2,DASH3,API1,API2 cons;
+```
