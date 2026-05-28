@@ -1,0 +1,21 @@
+{
+  "product_name": "client_asset_risk_kpi",
+  "version": "1.0.0",
+  "owner_team": "socotec-data-ai-hub",
+  "sla": {
+    "refresh_frequency": "daily",
+    "availability": "99.5%"
+  },
+  "fields": [
+    { "name": "client_id", "type": "string", "nullable": false },
+    { "name": "asset_id", "type": "string", "nullable": false },
+    { "name": "criticality_level", "type": "string", "nullable": false },
+    { "name": "inspection_count", "type": "long", "nullable": false },
+    { "name": "avg_non_conformity_score", "type": "double", "nullable": false },
+    { "name": "updated_at", "type": "timestamp", "nullable": false }
+  ],
+  "security": {
+    "contains_pii": false,
+    "access_policy": "rbac_client_scope"
+  }
+}
