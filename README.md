@@ -105,52 +105,41 @@ Current stack direction in job posts and profiles indicates:
 ### 2.4 Architecture Visuals (Mermaid)
 ```mermaid
 flowchart TB
-    subgraph S1[Data Sources]
-        ERP[ERP and Finance]
-        CRM[CRM and Sales]
-        IOT[IoT Sensors]
-        APP[Inspection Apps]
-        EXT[External Data]
-    end
-
-    subgraph S2[Ingestion]
-        CDC[CDC Connectors]
-        BATCH[Batch ELT Jobs]
-        STREAM[Kafka Streams]
-    end
-
-    subgraph S3[Lakehouse]
-        BRONZE[Bronze Raw Delta]
-        SILVER[Silver Curated Delta]
-        GOLD[Gold Business Marts]
-    end
-
-    subgraph S4[Consumption]
-        BI[BI Dashboards]
-        API[Client APIs]
-        GENAI[GenAI Assistant]
-    end
-
-    ERP --> CDC
-    CRM --> CDC
-    IOT --> STREAM
-    APP --> BATCH
-    EXT --> BATCH
-    CDC --> BRONZE
-    BATCH --> BRONZE
+    ERP[ERP and Finance] --> CDC[CDC Connectors]
+    CRM[CRM and Sales] --> CDC
+    IOT[IoT Sensors] --> STREAM[Kafka Streams]
+    APP[Inspection Apps] --> BATCH[Batch ELT Jobs]
+    EXT[External Data] --> BATCH
+    CDC --> BRONZE[Bronze Raw Delta]
     STREAM --> BRONZE
-    BRONZE --> SILVER --> GOLD
-    GOLD --> BI
-    GOLD --> API
-    GOLD --> GENAI
+    BATCH --> BRONZE
 
     classDef src fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92;
     classDef ing fill:#E1F5FE,stroke:#039BE5,stroke-width:2px,color:#01579B;
     classDef med fill:#F3E5F5,stroke:#8E24AA,stroke-width:2px,color:#4A148C;
-    classDef con fill:#FFF8E1,stroke:#F9A825,stroke-width:2px,color:#F57F17;
     class ERP,CRM,IOT,APP,EXT src;
     class CDC,BATCH,STREAM ing;
+    class BRONZE med;
+```
+
+```mermaid
+flowchart TB
+    BRONZE[Bronze Raw Delta] --> SILVER[Silver Curated Delta]
+    SILVER --> GOLD[Gold Business Marts]
+
+    classDef med fill:#F3E5F5,stroke:#8E24AA,stroke-width:2px,color:#4A148C;
     class BRONZE,SILVER,GOLD med;
+```
+
+```mermaid
+flowchart TB
+    GOLD[Gold Business Marts] --> BI[BI Dashboards]
+    GOLD --> API[Client APIs]
+    GOLD --> GENAI[GenAI Assistant]
+
+    classDef med fill:#F3E5F5,stroke:#8E24AA,stroke-width:2px,color:#4A148C;
+    classDef con fill:#FFF8E1,stroke:#F9A825,stroke-width:2px,color:#F57F17;
+    class GOLD med;
     class BI,API,GENAI con;
 ```
 
@@ -256,28 +245,28 @@ flowchart TD
 #### B. `src/proposed_dlt_pipeline.py` (DLT tables and methods)
 ```mermaid
 flowchart TB
-    subgraph SILVER_FLOW["Function silver_inspections"]
-        B1["Read stream bronze_inspections"] --> B2["Expectation asset_id not null"]
-        B2 --> B3["Expectation inspection_date not null"]
-        B3 --> B4["Create hashed inspector_key"]
-        B4 --> B5["Drop inspector_email column"]
-        B5 --> B6["Add updated_at timestamp"]
-        B6 --> B7["Output DLT table silver_inspections"]
-    end
-
-    subgraph GOLD_FLOW["Function gold_asset_risk_kpi"]
-        G1["Read DLT table silver_inspections"] --> G3["Inner join on asset_id"]
-        G2["Read table silver_assets"] --> G3
-        G3 --> G4["Group by client and asset"]
-        G4 --> G5["Aggregate inspection_id count"]
-        G5 --> G6["Aggregate non_conformity_score average"]
-        G6 --> G7["Rename final KPI columns"]
-        G7 --> G8["Output DLT table gold_asset_risk_kpi"]
-    end
+    B1["Read stream bronze_inspections"] --> B2["Expectation asset_id not null"]
+    B2 --> B3["Expectation inspection_date not null"]
+    B3 --> B4["Create hashed inspector_key"]
+    B4 --> B5["Drop inspector_email column"]
+    B5 --> B6["Add updated_at timestamp"]
+    B6 --> B7["Output DLT table silver_inspections"]
 
     classDef silver fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92;
-    classDef gold fill:#FFF8E1,stroke:#F9A825,stroke-width:2px,color:#F57F17;
     class B1,B2,B3,B4,B5,B6,B7 silver;
+```
+
+```mermaid
+flowchart TB
+    G1["Read DLT table silver_inspections"] --> G3["Inner join on asset_id"]
+    G2["Read table silver_assets"] --> G3
+    G3 --> G4["Group by client and asset"]
+    G4 --> G5["Aggregate inspection_id count"]
+    G5 --> G6["Aggregate non_conformity_score average"]
+    G6 --> G7["Rename final KPI columns"]
+    G7 --> G8["Output DLT table gold_asset_risk_kpi"]
+
+    classDef gold fill:#FFF8E1,stroke:#F9A825,stroke-width:2px,color:#F57F17;
     class G1,G2,G3,G4,G5,G6,G7,G8 gold;
 ```
 
