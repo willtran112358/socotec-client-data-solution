@@ -256,23 +256,23 @@ flowchart TD
 #### B. `src/proposed_dlt_pipeline.py` (DLT tables and methods)
 ```mermaid
 flowchart TB
-    subgraph SILVER_FLOW["Function: silver_inspections()"]
-        B1[Read stream: bronze_inspections] --> B2[Expectation: asset_id not null]
-        B2 --> B3[Expectation: inspection_date not null]
-        B3 --> B4[Create inspector_key = sha2(email + country_code)]
-        B4 --> B5[Drop inspector_email]
-        B5 --> B6[Add updated_at timestamp]
-        B6 --> B7[Output DLT table: silver_inspections]
+    subgraph SILVER_FLOW["Function silver_inspections"]
+        B1["Read stream bronze_inspections"] --> B2["Expectation asset_id not null"]
+        B2 --> B3["Expectation inspection_date not null"]
+        B3 --> B4["Create hashed inspector_key from email and country_code"]
+        B4 --> B5["Drop inspector_email column"]
+        B5 --> B6["Add updated_at timestamp"]
+        B6 --> B7["Output DLT table silver_inspections"]
     end
 
-    subgraph GOLD_FLOW["Function: gold_asset_risk_kpi()"]
-        G1[Read DLT table: silver_inspections] --> G3[Inner join on asset_id]
-        G2[Read table: silver_assets] --> G3
-        G3 --> G4[Group by client_id, asset_id, criticality_level]
-        G4 --> G5[Aggregate count inspection_id]
-        G5 --> G6[Aggregate avg non_conformity_score]
-        G6 --> G7[Rename final KPI columns]
-        G7 --> G8[Output DLT table: gold_asset_risk_kpi]
+    subgraph GOLD_FLOW["Function gold_asset_risk_kpi"]
+        G1["Read DLT table silver_inspections"] --> G3["Inner join on asset_id"]
+        G2["Read table silver_assets"] --> G3
+        G3 --> G4["Group by client_id asset_id criticality_level"]
+        G4 --> G5["Aggregate inspection_id count"]
+        G5 --> G6["Aggregate non_conformity_score average"]
+        G6 --> G7["Rename final KPI columns"]
+        G7 --> G8["Output DLT table gold_asset_risk_kpi"]
     end
 
     classDef silver fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92;
