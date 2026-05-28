@@ -235,7 +235,7 @@ flowchart LR
 #### A. `src/current_pipeline.py` (`run()` flow)
 ```mermaid
 flowchart TD
-    S([Start run()]) --> SP[Create SparkSession]
+    S["Start: run"] --> SP["Create SparkSession"]
     SP --> RI[Read inspections parquet]
     SP --> RA[Read assets parquet]
     RI --> J[Left join on asset_id]
@@ -243,7 +243,7 @@ flowchart TD
     J --> F[Filter inspection_status != CANCELLED]
     F --> T[Add processed_at timestamp]
     T --> W[Write Delta to curated snapshot path]
-    W --> E([End])
+    W --> E["End"]
 
     classDef io fill:#E3F2FD,stroke:#1E88E5,stroke-width:2px,color:#0D47A1;
     classDef trans fill:#E8F5E9,stroke:#43A047,stroke-width:2px,color:#1B5E20;
@@ -306,23 +306,33 @@ flowchart LR
 
 #### D. `src/api_contract_example.json` (contract structure)
 ```mermaid
-mindmap
-  root((client_asset_risk_kpi contract))
-    Metadata
-      product_name
-      version
-      owner_team
-    SLA
-      refresh_frequency daily
-      availability 99.5%
-    Fields
-      client_id string
-      asset_id string
-      criticality_level string
-      inspection_count long
-      avg_non_conformity_score double
-      updated_at timestamp
-    Security
-      contains_pii false
-      access_policy rbac_client_scope
+flowchart LR
+    ROOT["client_asset_risk_kpi contract"] --> M["Metadata"]
+    ROOT --> S["SLA"]
+    ROOT --> F["Fields"]
+    ROOT --> SEC["Security"]
+
+    M --> M1["product_name"]
+    M --> M2["version"]
+    M --> M3["owner_team"]
+
+    S --> S1["refresh_frequency: daily"]
+    S --> S2["availability: 99.5%"]
+
+    F --> F1["client_id: string"]
+    F --> F2["asset_id: string"]
+    F --> F3["criticality_level: string"]
+    F --> F4["inspection_count: long"]
+    F --> F5["avg_non_conformity_score: double"]
+    F --> F6["updated_at: timestamp"]
+
+    SEC --> SC1["contains_pii: false"]
+    SEC --> SC2["access_policy: rbac_client_scope"]
+
+    classDef root fill:#E8EAF6,stroke:#3949AB,stroke-width:2px,color:#1A237E;
+    classDef group fill:#E0F7FA,stroke:#00838F,stroke-width:2px,color:#004D40;
+    classDef leaf fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px,color:#E65100;
+    class ROOT root;
+    class M,S,F,SEC group;
+    class M1,M2,M3,S1,S2,F1,F2,F3,F4,F5,F6,SC1,SC2 leaf;
 ```
