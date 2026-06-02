@@ -500,3 +500,17 @@ flowchart TB
     class GOLD1,GOLD2,GOLD3 gold;
     class DASH1,DASH2,DASH3,API1,API2 cons;
 ```
+
+## 5) Interview Prep (Lead DE technical round)
+
+Optional materials for SOCOTEC Data Engineer interview preparation:
+
+| Path | Contents |
+|------|----------|
+| [`prep/README.md`](prep/README.md) | Prep index |
+| [`prep/interview/README.md`](prep/interview/README.md) | Round strategy, opening pitch, repo walkthrough |
+| [`prep/interview/01-technical-qa.md`](prep/interview/01-technical-qa.md) | Technical Q&A — PySpark, Databricks, medallion, governance |
+| [`prep/interview/02-cheatsheet.md`](prep/interview/02-cheatsheet.md) | One-page quick reference |
+| [`src/interview_pyspark_example.py`](src/interview_pyspark_example.py) | Live-coding reference (aggregates + filters) |
+
+Reported interview topic (Glassdoor, Dec 2025): **PySpark query with aggregates and filters** — see cheatsheet and example file.
