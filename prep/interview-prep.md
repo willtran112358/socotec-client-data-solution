@@ -10,7 +10,7 @@
 |---------|---------------|
 | [1. Strategy](#1-strategy) | Signals, opening pitch, repo walkthrough, interview flow, 30-min drill |
 | [2. Cheatsheet](#2-cheatsheet) | Stack, syntax, patterns — skim before the call |
-| [3. Technical Q&A](#3-technical-qa) | Full model answers for Lead DE depth |
+| [3. Technical Q&A](#3-technical-qa) | Mindmaps 10 phút + full model answers for Lead DE depth |
 | [4. Questions to ask](#4-questions-to-ask-the-lead-de) | Pick 2–3 for the end |
 
 Live-coding code file: [`src/interview_pyspark_example.py`](../src/interview_pyspark_example.py)
@@ -275,6 +275,167 @@ Gold marts: `gold_asset_risk_kpi`, `gold_compliance_kpi`, `gold_maintenance_sla_
 ## 3. Technical Q&A
 
 Answers framed for a **Lead DE** audience: concise, production-oriented, tied to this repo where possible.
+
+### 10-minute quick learn — DE technical mindmaps
+
+> **Mục tiêu:** ôn nhanh 3 nhánh hay hỏi nhất — PySpark live coding, Databricks/DLT, DQ & governance. Mỗi mindmap ~3 phút; chi tiết câu trả lời ở [§A](#a-live-coding--pyspark) · [§B](#b-databricks-delta-lake-dlt) · [§C](#c-data-quality-and-governance).
+
+| Phút | Làm gì | Mindmap / Q |
+|------|--------|-------------|
+| 0–3 | Nhớ pattern filter → join → groupBy → post-filter | [PySpark](#mindmap-a-pyspark-live-coding) · Q1–Q4 |
+| 3–6 | Bronze/Silver/Gold + expectations + MERGE | [DLT & Delta](#mindmap-b-databricks-dlt--delta-lake) · Q5–Q8 |
+| 6–10 | Gold DQ + contract + CI gate | [DQ & governance](#mindmap-c-data-quality--governance) · Q9–Q11 |
+
+**Repo khi nói:** `interview_pyspark_example.py` · `proposed_dlt_pipeline.py` · `proposed_data_quality_checks.sql` · `api_contract_example.json`
+
+#### Mindmap A — PySpark (live coding)
+
+```mermaid
+mindmap
+  root((PySpark Q&A))
+    Q1 Aggregates and filters
+      Read Silver not Bronze
+      Filter early
+        status not CANCELLED
+        date window 90d
+        criticality HIGH CRITICAL
+      Inner join on asset_id
+      groupBy client_id asset_id
+      agg count avg
+      Post-filter inspection_count ge 2
+      orderBy avg_score desc
+      Repo interview_pyspark_example.py
+    Q2 DataFrame vs SQL
+      Same Catalyst plan
+      DataFrame for pipelines DLT tests
+      SQL for windows dbt readability
+    Q3 Join types
+      Inner Gold KPIs matched only
+      Left all assets flag gaps
+      Left anti DQ zero inspections
+      Gap current_pipeline left no orphan policy
+    Q4 Skew on client_id
+      Salt hot keys
+      Two-phase aggregation
+      AQE on Databricks
+      Partition prune before groupBy
+    Cheatsheet patterns
+      col count avg when lit
+      date_sub current_date
+      Window row_number latest per client
+    Lead phrases
+      Filter before join cut shuffle
+      MERGE Gold not daily overwrite
+      Explicit alias on agg columns
+```
+
+#### Mindmap B — Databricks, DLT & Delta Lake
+
+```mermaid
+mindmap
+  root((DLT and Delta Q&A))
+    Q5 Medallion layers
+      Bronze raw append schema drift OK
+      Silver conformed dedup pseudonymize
+        silver_inspections silver_assets
+      Gold KPIs narrow stable
+        gold_asset_risk_kpi
+      Rule Gold narrow Silver reusable
+    Q6 DLT expectations
+      expect metric only keep row
+      expect_or_drop drop bad rows
+      expect_or_fail fail pipeline
+      Silver null asset_id inspection_date
+      Repo proposed_dlt_pipeline.py
+    Q7 MERGE vs OVERWRITE
+      Overwrite POC dev rebuild
+      MERGE upsert incremental Gold keys
+      Append Bronze streams
+      Gap current_pipeline overwrite
+    Q8 PII pseudonymization
+      sha2 concat_ws email country
+      Drop raw email column
+      Salt in secret manager if needed
+      Same hash enables join no expose
+      Catalog document inspector_key
+    Delta essentials
+      format delta append save
+      DeltaTable merge whenMatched
+      versionAsOf time travel
+      OPTIMIZE ZORDER client_id asset_id
+    Stack context
+      AWS S3 Databricks Airflow
+      Unity Catalog ACLs lineage
+```
+
+#### Mindmap C — Data quality & governance
+
+```mermaid
+mindmap
+  root((DQ and Governance Q&A))
+    Q9 Gold DQ checks
+      Freshness MAX updated_at SLA 1 day
+      Null keys client_id asset_id
+      Range score 0 to 100
+      Plus referential integrity silver_assets
+      Row count anomaly vs 7d avg
+      No duplicate client_id asset_id
+      Repo proposed_data_quality_checks.sql
+    Q10 Data contract
+      Versioned schema SLA owner security
+      api_contract_example.json
+      Semver breaking 1.0 to 2.0
+      CI validate Gold vs contract pre deploy
+      rbac_client_scope row filter client_id
+      contains_pii false on Gold products
+    Q11 DQ in CI/CD
+      PR pipeline change
+      Unit tests
+      Schema vs contract
+      DQ SQL on staging Gold
+      Deploy Databricks job
+      Freshness alert prod
+      Silver DLT expectations
+      dbt Great Expectations optional
+      CRITICAL block MEDIUM ticket
+    Governance pillars
+      OpenMetadata catalog
+      Unity Catalog schemas ACLs
+      Lineage Bronze to Gold
+      PII never in client APIs
+    Lead trade-off Q18
+      MVP Bronze thin Silver one Gold
+      Harden contracts DQ RBAC backfill
+      Never expose Bronze to clients
+```
+
+#### Mindmap tổng hợp — 3 nhánh DE technical (1 trang)
+
+```mermaid
+mindmap
+  root((SOCOTEC DE Technical 10 min))
+    PySpark Q1-Q4
+      Filter join groupBy agg
+      interview_pyspark_example.py
+      Critique current_pipeline joins
+    DLT Delta Q5-Q8
+      Bronze Silver Gold
+      expect_or_drop Silver
+      MERGE Gold sha2 PII
+      proposed_dlt_pipeline.py
+    DQ Governance Q9-Q11
+      Freshness nulls range SQL
+      Data contract RBAC
+      CI block on CRITICAL
+      proposed_data_quality_checks.sql
+      api_contract_example.json
+    Interview hook
+      Glassdoor Dec 2025 aggregates filters
+      Lead DE production mindset
+      TIC inspections to risk KPIs
+```
+
+---
 
 ### A. Live coding — PySpark
 

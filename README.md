@@ -507,7 +507,7 @@ Optional materials for SOCOTEC Data Engineer interview preparation:
 
 | Path | Contents |
 |------|----------|
-| [`prep/interview-prep.md`](prep/interview-prep.md) | **All-in-one guide** — strategy, cheatsheet, technical Q&A |
+| [`prep/interview-prep.md`](prep/interview-prep.md) | **All-in-one guide** — strategy, cheatsheet, **DE technical Q&A mindmaps (10 min)**, full answers |
 | [`src/interview_pyspark_example.py`](src/interview_pyspark_example.py) | Live-coding reference (aggregates + filters) |
 
 Reported interview topic (Glassdoor, Dec 2025): **PySpark query with aggregates and filters** — see prep guide §2 Cheatsheet and example file.
