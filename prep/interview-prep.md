@@ -9,6 +9,8 @@
 | Section | What's inside |
 |---------|---------------|
 | [1. Strategy](#1-strategy) | Signals, opening pitch, repo walkthrough, interview flow, 30-min drill |
+| [1.6 Perrine Q&A](#16-perrine-tcheeko-lead-de--estimate-qa) | Likely Lead DE questions (main interviewer) |
+| [1.7 Viet Q&A](#17-vu-tran-viet-em-platform-vn--estimate-qa) | Secondary VN site questions (1–2) |
 | [2. Cheatsheet](#2-cheatsheet) | Stack, syntax, patterns — skim before the call |
 | [3. Technical Q&A](#3-technical-qa) | Mindmaps 10 phút + full model answers for Lead DE depth |
 | [4. Questions to ask](#4-questions-to-ask-the-lead-de) | Pick 2–3 for the end |
@@ -71,6 +73,38 @@ flowchart LR
 2. **Write from memory** the PySpark example in `src/interview_pyspark_example.py` on paper or a blank notebook (10 min).
 3. **Explain aloud** why `current_pipeline.py` is insufficient and how DLT fixes it (5 min).
 4. **Prepare 3 questions** for the Lead DE ([§4](#4-questions-to-ask-the-lead-de)).
+5. **Skim** [§1.6 Perrine Q&A](#16-perrine-tcheeko-lead-de--estimate-qa) and [§1.7 Viet Q&A](#17-vu-tran-viet-em-platform-vn--estimate-qa) (5 min).
+
+### 1.6 Perrine TCHEEKO (Lead DE) — estimate Q&A
+
+**Role:** Team Leader Data Engineer @ SOCOTEC Data & AI Hub (GCP certified, PySpark/SQL, lakehouse, documentation & teamwork). **Main technical interviewer** — expect depth on Spark, Delta/DLT, and production habits.
+
+| Question | Answer |
+|----------|--------|
+| Walk me through a PySpark query with aggregates and filters. | Read **Silver**; filter early (`CANCELLED`, 90-day window, criticality); **inner** join on `asset_id`; `groupBy` client/asset; `count` + `avg`; post-filter `inspection_count >= 2`; order by risk — see `interview_pyspark_example.py`. |
+| When do you use a **left anti** join? | Rows in left with **no** match on right — e.g. assets with zero inspections in the period for a DQ report (she teaches this pattern on LinkedIn). |
+| Why **CTEs** instead of nested subqueries? | Readability, reuse of logic blocks, easier review in PRs — same plan as subqueries in Spark SQL. |
+| **union** vs **unionByName** in PySpark? | `union` needs same column count/order; **unionByName** aligns by name — safer when schemas drift between sources. |
+| Bronze / Silver / Gold for SOCOTEC inspection data? | Bronze: raw append; Silver: conformed, deduped, **pseudonymized**; Gold: narrow KPIs (`gold_asset_risk_kpi`) for BI/API — never expose Bronze to clients. |
+| **MERGE** vs **overwrite** on Gold? | Overwrite = POC rebuild; production Gold = **MERGE** on `(client_id, asset_id)` + `updated_at` for idempotent daily refresh. |
+| DLT `@dlt.expect` vs `@dlt.expect_or_drop`? | `expect` = metric only; **expect_or_drop** = drop bad rows in Silver (null `asset_id`, `inspection_date`) — repo `proposed_dlt_pipeline.py`. |
+| How do you explore a huge table without blowing cost? | Sample first (`TABLESAMPLE` / limited partitions / `limit` after filter), select only needed columns, avoid full scans in dev — then validate on representative slice. |
+| How do you handle **PII / GDPR** in pipelines? | Pseudonymize in Silver (`sha2` + drop raw email); document in catalog; Gold contract `contains_pii: false`; right-to-erasure process on keys. |
+| Critique our POC ETL (`current_pipeline.py`). | No DQ, overwrite on curated path, left join without orphan policy, no PII, hard-coded paths — fix with DLT expectations + MERGE + Unity Catalog. |
+| How much **documentation** do you write? | Update runbooks and contract fields each sprint — enough that the next DE or BA can operate without a tribal knowledge call (matches her team norm). |
+| **Solo vs team** — preference? | Team — complex lakehouse needs code review, on-call pairs, and shared standards; I escalate early when prod data is at risk. |
+| **Databricks / AWS** vs your GCP background? | Same lakehouse patterns (Spark, Delta, Airflow); I learn the cloud control plane per client — SOCOTEC JD is AWS + Databricks + Delta. |
+| Why **SOCOTEC** and this DE role? | International lakehouse + TIC data products (inspection → risk KPIs, compliance APIs, GenAI on certified Gold); bilingual hub and certifications funded. |
+| What would you do in the **first 90 days**? | Map sources and contracts; ship one vertical Bronze→Gold slice with DQ; align with Lead on CI gates and client API readiness. |
+
+### 1.7 Vu Tran-Viet (EM Platform, VN site) — estimate Q&A
+
+**Role:** Engineering Platform Manager @ SOCOTEC Monitoring Vietnam (instrumentation, BIM, monitoring, mechanical/aerospace background). **Secondary interviewer** — lighter on Spark; focus on collaboration, VN–global delivery, and explaining data value to engineering teams.
+
+| Question | Answer |
+|----------|--------|
+| How will your data work **support monitoring / instrumentation** teams in Vietnam? | Reliable time-series and asset master data in Silver; Gold KPIs (freshness, anomaly flags) that monitoring dashboards and BIM workflows can trust — clear SLA and ownership with VN engineering. |
+| How do you **explain a pipeline or data issue** to non-data engineers? | Business impact first (e.g. “dashboard stale 26h → field teams see old risk scores”), one diagram Bronze→Gold, one decision needed — no Spark jargon unless they ask. |
 
 ---
 
