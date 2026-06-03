@@ -29,7 +29,96 @@ SOCOTEC has high potential to scale data products because:
 
 Overall assessment: **High potential**, especially for monetizable B2B analytics and AI-assisted risk management offerings.
 
-### 1.4 Business Visuals (Mermaid)
+### 1.4 Company Snapshot (Public, ~2025–2026)
+
+| Metric | Value |
+|--------|-------|
+| Positioning | Global leader in **Testing, Inspection, Certification (TIC)** for construction, infrastructure, and industry |
+| Tagline | *Building trust for a safer and sustainable world* |
+| Scale | ~**15,000** employees · **250,000** clients · **26** countries |
+| Operating model | **Trusted third party** — public and private clients, full project lifecycle (design → operation → decommissioning) |
+
+**Strategic themes (corporate site):** Renewable energy · Sustainability · Smart cities · Industry 4.0 · **BIM & Data**
+
+### 1.5 Service Lines (What SOCOTEC Sells)
+
+| Service line | Typical deliverables | Data relevance |
+|--------------|---------------------|----------------|
+| **Green Building** | Energy performance, low-carbon trajectories, ESG | Time-series energy, asset benchmarks, carbon KPIs |
+| **Technical Inspection & Verification (TIV)** | Regulatory inspections, periodic facility/equipment checks | Inspection events, pass/fail, schedules, evidence |
+| **Specialty Engineering** | Structural, geotechnical, envelope, dispute support | Models, measurements, lab results |
+| **Failure Analysis** | Root cause, forensic engineering | Case files, sensor logs, reports |
+| **Fire & Life Safety** | Testing, certification, building control (e.g. UKTC acquisition) | Compliance results, test certificates |
+| **Environment & Safety** | Monitoring, hygiene, water quality, asbestos | Environmental samples, thresholds, alerts |
+| **Certification** | ISO / FSSC / GHG verification (strong in APAC hubs) | Audit trails, management-system metadata |
+| **Training** | 41 training centres in France alone | LMS data, certification renewals |
+
+### 1.6 Sectors & Client Types
+
+| Sector | Examples | SOCOTEC role |
+|--------|----------|--------------|
+| **Construction & Real Estate** | Buildings, envelopes, materials testing | Risk reduction before/after handover |
+| **Infrastructure** | Roads, dams, rail (e.g. Etihad Rail UAE), ordnance (Germany) | Long-life asset monitoring and safety |
+| **Industry & Energy** | Plants, utilities, renewable (Harvard Street solar, dams) | Compliance + performance optimization |
+| **Real Estate / Asset owners** | PERIAL energy optimization, property valuations (NL) | Recurring advisory + monitoring contracts |
+
+### 1.7 Product Families: Green Trust & Trust & Tech
+
+**Green Trust** — environmental and structural assurance for sustainable assets:
+
+- **BlueTrust Monitoring** — environmental monitoring (water, air, soil)
+- **Optic fibre / structural monitoring** — deformation, structural health
+- **Topographic surveys** — geospatial baseline for change detection
+
+**Trust & Tech / BIM & Data** — digital layer on physical inspections:
+
+- BIM-linked asset models and project data
+- **Integrated digital platform** (Vietnam Cementys): survey software, real-time monitoring SaaS, ML/AI for infrastructure ageing
+- Partnerships: e.g. **FREEDA** (AI architectural plan analysis, Jan 2026)
+
+*DE implication:* Bronze = raw sensor/app/ERP feeds; Silver = conformed assets + time-series; Gold = client KPIs (risk, compliance, freshness, anomaly flags) consumed by monitoring UIs and APIs.
+
+### 1.8 Regional Footprint (Interview Context)
+
+| Region | Note | Scale (public) |
+|--------|------|----------------|
+| **France** | Group HQ strength; 190 branches, 41 training centres | Leader in TIC risk management |
+| **UK & Ireland** | Materials testing, environmental monitoring, acquisitions (LDG, UKTC) | 2,300+ experts, 65 offices |
+| **USA** | Building envelope, geotech, commissioning, dispute resolution | 1,700 experts, 40+ offices |
+| **Germany** | Building, infrastructure, EOD (Röhll & Koch), geodata (TRIGIS) | 1,500 employees, 38 locations |
+| **Spain / BAC** | Civil engineering inspection, labs in Catalonia | 850 employees |
+| **Vietnam (Cementys)** | **Structural health monitoring**, environmental services, digital platform | 1 office; ties to global monitoring + Data Hub |
+| **UAE** | Mega-projects (Louvre Abu Dhabi, Sea World, DEWA, Etihad Rail) | Third-party design review, MEP, H&S |
+| **APAC certification** | Singapore, Japan, Thailand, Philippines — ISO, GHG, concrete/steel cert | Management-system audits |
+
+### 1.9 Vietnam — Cementys & Monitoring (Vu Tran-Viet Round)
+
+SOCOTEC Vietnam operates through **Cementys**, focused on **tech-enabled monitoring** (not generic TIC back-office):
+
+- In-situ measurements: technical assessment, inspections, surveys
+- **Structural health monitoring** for transport and energy infrastructure
+- Environmental: noise, vibration, water pollution, geotechnical, topography
+- **Data visualisation**: proprietary survey/maintenance software, 24/7 on-call monitoring
+- **Digital platform**: data science, automated ageing analysis, maintenance SaaS, ML/AI
+
+**What they likely need from a DE:** reliable ingestion of high-frequency sensor streams, asset master alignment, SLA-backed Gold metrics for dashboards/BIM, clear ownership between Massy Data Hub and VN engineering.
+
+### 1.10 Data & AI Hub — Inferred Role Requirements
+
+From public job posts, LinkedIn (e.g. Lead DE Perrine TCHEEKO), and group digital direction:
+
+| Requirement area | Expected depth |
+|------------------|----------------|
+| **PySpark / SQL** | Aggregates, filters, joins; live coding reported (Glassdoor, Dec 2025) |
+| **Lakehouse** | AWS + **Databricks** + **Delta**; Bronze/Silver/Gold; DLT expectations |
+| **Orchestration** | Airflow; job triggers, SLA sensors |
+| **Governance** | PII/GDPR, Unity Catalog, data contracts, DQ in CI |
+| **Product mindset** | Turn inspection/compliance/monitoring data into **client-facing products** (APIs, Power BI, GenAI on Gold only) |
+| **Soft signals** | Documentation, teamwork, bilingual hub (FR/EN), production escalation judgment |
+
+**Business pull:** acquisitions (testing labs, monitoring, geodata) increase heterogeneous sources → need standardized Silver entities and governed Gold products.
+
+### 1.11 Business Visuals (Mermaid)
 ```mermaid
 flowchart TB
     A[Field Inspection and Testing] --> B[Reports and Measurements]
@@ -507,7 +596,7 @@ Optional materials for SOCOTEC Data Engineer interview preparation:
 
 | Path | Contents |
 |------|----------|
-| [`prep/interview-prep.md`](prep/interview-prep.md) | **All-in-one guide** — strategy, cheatsheet, **DE technical Q&A mindmaps (10 min)**, full answers |
+| [`prep/interview-prep.md`](prep/interview-prep.md) | **All-in-one guide** — strategy, **§1.8 business/products**, cheatsheet, DE + **business Q&A (Q15–Q25)**, mindmaps |
 | [`src/interview_pyspark_example.py`](src/interview_pyspark_example.py) | Live-coding reference (aggregates + filters) |
 
 Reported interview topic (Glassdoor, Dec 2025): **PySpark query with aggregates and filters** — see prep guide §2 Cheatsheet and example file.

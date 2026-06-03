@@ -11,8 +11,9 @@
 | [1. Strategy](#1-strategy) | Signals, opening pitch, repo walkthrough, interview flow, 30-min drill |
 | [1.6 Perrine Q&A](#16-perrine-tcheeko-lead-de--estimate-qa) | Likely Lead DE questions (main interviewer) |
 | [1.7 Viet Q&A](#17-vu-tran-viet-em-platform-vn--estimate-qa) | Secondary VN site questions (1–2) |
+| [1.8 Business & products](#18-socotec-business-products--what-they-care-about) | Company, services, Green Trust, VN monitoring, role demands |
 | [2. Cheatsheet](#2-cheatsheet) | Stack, syntax, patterns — skim before the call |
-| [3. Technical Q&A](#3-technical-qa) | Mindmaps 10 phút + full model answers for Lead DE depth |
+| [3. Technical Q&A](#3-technical-qa) | Mindmaps 10 min + full model answers (PySpark, DLT, DQ, **business Q15–Q25**) |
 | [4. Questions to ask](#4-questions-to-ask-the-lead-de) | Pick 2–3 for the end |
 
 Live-coding code file: [`src/interview_pyspark_example.py`](../src/interview_pyspark_example.py)
@@ -73,7 +74,7 @@ flowchart LR
 2. **Write from memory** the PySpark example in `src/interview_pyspark_example.py` on paper or a blank notebook (10 min).
 3. **Explain aloud** why `current_pipeline.py` is insufficient and how DLT fixes it (5 min).
 4. **Prepare 3 questions** for the Lead DE ([§4](#4-questions-to-ask-the-lead-de)).
-5. **Skim** [§1.6 Perrine Q&A](#16-perrine-tcheeko-lead-de--estimate-qa) and [§1.7 Viet Q&A](#17-vu-tran-viet-em-platform-vn--estimate-qa) (5 min).
+5. **Skim** [§1.6 Perrine Q&A](#16-perrine-tcheeko-lead-de--estimate-qa), [§1.7 Viet Q&A](#17-vu-tran-viet-em-platform-vn--estimate-qa), and [§1.8 Business](#18-socotec-business-products--what-they-care-about) (5 min).
 
 ### 1.6 Perrine TCHEEKO (Lead DE) — estimate Q&A
 
@@ -94,7 +95,8 @@ flowchart LR
 | How much **documentation** do you write? | Update runbooks and contract fields each sprint — enough that the next DE or BA can operate without a tribal knowledge call (matches her team norm). |
 | **Solo vs team** — preference? | Team — complex lakehouse needs code review, on-call pairs, and shared standards; I escalate early when prod data is at risk. |
 | **Databricks / AWS** vs your GCP background? | Same lakehouse patterns (Spark, Delta, Airflow); I learn the cloud control plane per client — SOCOTEC JD is AWS + Databricks + Delta. |
-| Why **SOCOTEC** and this DE role? | International lakehouse + TIC data products (inspection → risk KPIs, compliance APIs, GenAI on certified Gold); bilingual hub and certifications funded. |
+| Why **SOCOTEC** and this DE role? | Global TIC + **Green Trust/BIM & Data** scale; Data Hub turns inspections and **monitoring streams** into products; lakehouse (AWS, Databricks, Delta); acquisitions need conformed Silver; role funds certs and works with international + VN monitoring teams. |
+| What is **SOCOTEC** in one sentence? | Independent **TIC** group building trust for safer, sustainable assets — inspections, labs, certification, and increasingly **digital monitoring** and data products. |
 | What would you do in the **first 90 days**? | Map sources and contracts; ship one vertical Bronze→Gold slice with DQ; align with Lead on CI gates and client API readiness. |
 
 ### 1.7 Vu Tran-Viet (EM Platform, VN site) — estimate Q&A
@@ -105,6 +107,87 @@ flowchart LR
 |----------|--------|
 | How will your data work **support monitoring / instrumentation** teams in Vietnam? | Reliable time-series and asset master data in Silver; Gold KPIs (freshness, anomaly flags) that monitoring dashboards and BIM workflows can trust — clear SLA and ownership with VN engineering. |
 | How do you **explain a pipeline or data issue** to non-data engineers? | Business impact first (e.g. “dashboard stale 26h → field teams see old risk scores”), one diagram Bronze→Gold, one decision needed — no Spark jargon unless they ask. |
+| What do you know about **SOCOTEC’s business**? | Global **TIC** leader (~15k staff, 250k clients, 26 countries); trusted third party across construction, infrastructure, industry; strategic push on **Green Trust** (monitoring, ESG) and **BIM & Data**; Data Hub productizes inspection/compliance/monitoring data — see [§1.8](#18-socotec-business-products--what-they-care-about). |
+| Why **monitoring data** is different from inspection PDFs? | Higher frequency time-series, 24/7 SLA, anomaly detection; needs streaming/micro-batch Bronze + asset alignment in Silver; Gold freshness drives field response — Cementys VN model. |
+
+---
+
+### 1.8 SOCOTEC business, products & what they care about
+
+> **Sources:** [socotec.com](https://www.socotec.com) corporate site, country pages (VN, FR, UAE), news (FREEDA AI, acquisitions), public sustainability reports. Estimates marked where not published.
+
+#### 1.8.1 Elevator pitch — company (30 seconds)
+
+SOCOTEC is a **global TIC group** (Testing, Inspection, Certification): a **trusted third party** for construction, infrastructure, and industry clients from project design through operation and decommissioning. ~15,000 people, 250,000 clients, 26 countries. Beyond classic site inspections, the group invests in **Green Trust** (environmental and structural monitoring), **BIM & Data**, and an international **Data & AI Hub** to turn operational data into recurring digital products — risk KPIs, compliance evidence, ESG and monitoring SaaS.
+
+#### 1.8.2 Service lines → data products (map for DE answers)
+
+| SOCOTEC service (public) | Field output | Lakehouse entity / Gold product |
+|--------------------------|--------------|----------------------------------|
+| Technical inspection & verification | Inspection reports, schedules | `silver_inspections` → `gold_asset_risk_kpi` |
+| Environment & safety / water quality | Samples, thresholds, alerts | `gold_environmental_kpi`, streaming Bronze for sensors |
+| Green Building / energy optimization | Audits, consumption trajectories | ESG marts, client carbon KPIs |
+| Fire & life safety | Test certs, pass/fail | `gold_compliance_kpi` + evidence links |
+| Certification (ISO, GHG) | Audit outcomes | Separate cert domain; less overlap with inspection repo |
+| **BlueTrust / structural monitoring** | Time-series, 24/7 dashboards | High-frequency Bronze, anomaly Gold, SLA freshness |
+| Training | Attendance, certs | Lower priority for client API hub |
+
+#### 1.8.3 Strategic pillars (say these names in interview)
+
+| Pillar | Meaning | Why Data Hub cares |
+|--------|---------|-------------------|
+| **Green Trust** | Safer, sustainable assets via monitoring & ESG | Sensor + environmental data at scale |
+| **Trust & Tech** | Digital tools on top of physical expertise | SaaS, real-time platforms (VN Cementys) |
+| **BIM & Data** | Model-linked project/asset data | Unified asset IDs across BIM, inspections, monitoring |
+| **Industry 4.0 / Smart cities** | Connected infrastructure | IoT → Bronze, predictive maintenance Gold |
+
+**Recent signal:** SOCOTEC × **FREEDA** (Jan 2026) — AI on architectural plans → expect interview interest in **governed Gold metrics** feeding ML, not raw Bronze in models.
+
+#### 1.8.4 Vietnam & global monitoring (for Viet + Perrine)
+
+**Cementys (SOCOTEC Vietnam)** — public scope:
+
+- Structural health monitoring (transport, energy infrastructure)
+- Environmental: noise, vibration, water, geotechnical, topography
+- Proprietary visualisation + **integrated digital platform** (ML, ageing analysis, maintenance SaaS)
+
+**Your bridge sentence:** *"Massy lakehouse standardizes client and asset master data; Vietnam streams monitoring into the same Silver/Gold contracts so global dashboards and VN 24/7 ops share one truth."*
+
+#### 1.8.5 What the Lead DE / Data Hub likely demands (estimate)
+
+| They care about | You show |
+|-----------------|----------|
+| Production-grade Spark | Live aggregates/filters; filter-before-join; explicit aliases |
+| Medallion discipline | Bronze immutable; Silver pseudonymized; Gold narrow + MERGE |
+| Trust & compliance | GDPR, contracts, `contains_pii: false`, RBAC by `client_id` |
+| Product delivery | One vertical slice to API/Power BI with DQ gates |
+| Cost & ops | Partition prune, job clusters, no full-table `collect()` in dev |
+| Cross-site teamwork | Document contracts; align with VN monitoring SLAs |
+| Business literacy | Tie pipeline choices to TIC + monitoring client value |
+
+#### 1.8.6 Business Q&A — quick table (add to §E)
+
+| Question | Short answer |
+|----------|--------------|
+| What does SOCOTEC do? | TIC + advisory as independent trusted third party; construction, infrastructure, industry, environment. |
+| Who are the clients? | Contractors, asset owners, insurers, public authorities, utilities — 250k clients globally. |
+| How does SOCOTEC make money? | Project fees, recurring inspections, monitoring contracts, certification audits, training; data products are **margin-accretive** add-on. |
+| Name a digital product. | Asset risk KPI API, compliance automation, monitoring SaaS with real-time Gold feeds. |
+| Acquisitions and data? | Labs, geodata, monitoring firms → more sources; need **Silver conformation** before client Gold. |
+| UAE / mega-project example? | Third-party design review, H&S, MEP on Louvre Abu Dhabi, Sea World — **evidence-heavy** compliance trail. |
+| Difference TIC vs Cementys monitoring? | TIC = episodic inspections/certificates; monitoring = **continuous** time-series + 24/7 SLA. |
+
+#### 1.8.7 Opening pitch — business line (optional 15 sec add-on)
+
+> I also looked at SOCOTEC’s **Green Trust** and **BIM & Data** direction — especially structural and environmental monitoring in Vietnam and the push to industrialize plan analysis with AI — so I’d design pipelines that serve both classic inspection KPIs and high-frequency monitoring with the same governed asset model.
+
+#### 1.8.8 5-minute business drill (before call)
+
+1. Say **TIC + trusted third party + 15k/250k/26** without notes.  
+2. Name **3 service lines** and one **data product** each.  
+3. Explain **Cementys** in one sentence and link to Silver/Gold.  
+4. Answer: *"Why SOCOTEC Data Hub?"* — international lakehouse, productized compliance/risk data, GenAI on certified metrics.  
+5. Skim README §1.4–1.10 for numbers and acquisitions context.
 
 ---
 
@@ -125,7 +208,16 @@ flowchart LR
 
 ### TIC business — 15-second context
 
-Testing, Inspection, Certification for construction / infrastructure / environment. Data opportunity: turn inspection + compliance data into **client analytics products** (risk KPIs, compliance APIs, ESG, predictive maintenance). SOCOTEC runs a global **Data & AI Hub** and an international Lakehouse modernization.
+**Testing, Inspection, Certification** — global leader, *trusted third party*, construction / infrastructure / industry / environment. **~15k employees · 250k clients · 26 countries.** Also: **Green Trust** (monitoring, ESG), **BIM & Data**, certification hubs in APAC. Data opportunity: inspection + compliance + **sensor monitoring** → **client products** (risk KPIs, APIs, ESG, predictive maintenance). **Data & AI Hub** (Massy) + international lakehouse on AWS/Databricks.
+
+### SOCOTEC products & sectors (30-second)
+
+| Bucket | Examples |
+|--------|----------|
+| **Services** | Green Building, TIV, Specialty Engineering, Fire, Environment & Safety, Certification, Training |
+| **Sectors** | Construction, Real Estate, Infrastructure, Industry, Energy & Utilities |
+| **Digital** | BlueTrust Monitoring, structural/optic monitoring, Cementys platform (VN), FREEDA AI plans |
+| **Gold in repo** | `gold_asset_risk_kpi`, `gold_compliance_kpi`, `gold_maintenance_sla_kpi` |
 
 ### Medallion layers
 
@@ -303,6 +395,8 @@ Gold marts: `gold_asset_risk_kpi`, `gold_compliance_kpi`, `gold_maintenance_sla_
 - [ ] Recite 3 DQ checks on Gold  
 - [ ] Critique `current_pipeline.py` (5 bullets)  
 - [ ] Prepare 2 questions for Lead DE  
+- [ ] **Business:** TIC + scale (15k / 250k / 26) + Green Trust + one VN/Cementys sentence  
+- [ ] **Business:** 2 service lines → 1 data product each (see [§1.8.2](#182-service-lines--data-products-map-for-de-answers))  
 
 ---
 
@@ -467,6 +561,37 @@ mindmap
       Glassdoor Dec 2025 aggregates filters
       Lead DE production mindset
       TIC inspections to risk KPIs
+```
+
+#### Mindmap D — SOCOTEC business (5 min)
+
+```mermaid
+mindmap
+  root((SOCOTEC Business))
+    Company
+      TIC global leader
+      15k staff 250k clients 26 countries
+      Trusted third party lifecycle
+    Services
+      Green Building TIV
+      Fire Environment Safety
+      Certification Training
+    Digital pillars
+      Green Trust BlueTrust
+      BIM and Data
+      FREEDA AI plans 2026
+    Vietnam Cementys
+      Structural health monitoring
+      Time series 24/7 SLA
+      ML SaaS maintenance platform
+    Data Hub demand
+      AWS Databricks Delta
+      Medallion contracts DQ
+      Client APIs Power BI GenAI on Gold
+    Repo mapping
+      gold_asset_risk_kpi
+      gold_compliance_kpi
+      README section 1.4 to 1.10
 ```
 
 ---
@@ -715,6 +840,44 @@ This is a strong "code review" answer for a Lead round.
 1. **Asset risk dashboard** — `gold_asset_risk_kpi` (inspection frequency, non-conformity trends).
 2. **Compliance automation API** — pass/fail against regulation rules with evidence links.
 3. **Predictive maintenance signals** — feature store from inspection findings + IoT (MLOps layer).
+4. **Monitoring / Green Trust SaaS** — real-time structural or environmental KPIs with SLA-backed freshness (Cementys-style).
+5. **ESG / low-carbon trajectory** — energy optimization benchmarks (e.g. asset-management clients like PERIAL).
+
+---
+
+#### Q20. Describe SOCOTEC’s business model without jargon.
+
+SOCOTEC sells **trust**: independent experts test, inspect, and certify that buildings, infrastructure, and industrial assets meet safety, regulatory, and sustainability requirements. Clients are owners, contractors, insurers, and public bodies. Revenue is project-based and recurring (re-inspections, monitoring contracts, certification audits). The group is scaling **digital** layers — monitoring platforms, BIM-linked data, AI-assisted document analysis — so the Data Hub can productize the same evidence clients already pay for in PDFs and reports.
+
+---
+
+#### Q21. What are Green Trust and BlueTrust Monitoring?
+
+**Green Trust** is SOCOTEC’s umbrella for environmentally and structurally **sustainable, monitored assets**. **BlueTrust Monitoring** covers environmental monitoring (e.g. water quality — relevant to UK/NL public contracts). For DE: treat sensor and lab feeds as **high-volume Bronze**, roll up to Gold KPIs with strict freshness SLAs; never mix unvalidated raw streams into client APIs.
+
+---
+
+#### Q22. How do acquisitions affect the data platform?
+
+Recent moves (testing labs, geodata, monitoring, infrastructure consultancies — US, UK, Germany, Italy) bring **new source systems**. Pattern: land in Bronze per source → **Silver conformation** on shared keys (`asset_id`, `client_id`, `site_id`) → single Gold product per client contract. Avoid N duplicate Gold tables per acquisition; merge in Silver.
+
+---
+
+#### Q23. BIM & Data — what should a DE know?
+
+BIM links **3D model components** to project phases. SOCOTEC’s angle is assurance data tied to assets (inspections, monitoring points, compliance). Silver should hold a **stable asset registry** that BIM tools and monitoring dashboards both reference; Gold exposes KPIs, not full BIM geometry (store references/IDs).
+
+---
+
+#### Q24. Why is Vietnam (Cementys) strategically important?
+
+VN is the **monitoring and digital-platform** beachhead: structural health for transport/energy, environmental measurements, ML/SaaS maintenance. Data Hub needs **low-latency, reliable pipelines** for time-series and shared asset masters — your role bridges Massy lakehouse standards and VN engineering consumers (relevant if Viet interviews).
+
+---
+
+#### Q25. Map one UAE mega-project to data entities.
+
+Public projects: Louvre Abu Dhabi, Sea World, DEWA, Etihad Rail. Services: third-party design review, inspections, H&S, MEP. In the lakehouse: **PROJECT → SITE → ASSET**, inspections and **COMPLIANCE_RESULT** with `evidence_link`, client-scoped Gold for portfolio risk — aligns with repo ER model in README §4.
 
 ---
 
