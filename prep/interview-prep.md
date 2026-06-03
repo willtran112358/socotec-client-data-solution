@@ -12,6 +12,7 @@
 | [1.6 Perrine Q&A](#16-perrine-tcheeko-lead-de--estimate-qa) | Likely Lead DE questions (main interviewer) |
 | [1.7 Viet Q&A](#17-vu-tran-viet-em-platform-vn--estimate-qa) | Secondary VN site questions (1–2) |
 | [1.8 Business & products](#18-socotec-business-products--what-they-care-about) | Company, services, Green Trust, VN monitoring, role demands |
+| [1.9 French phrases](#19-friendly-french-phrases-perrine--viet) | Casual **vous** phrases — warm, professional, not fluent required |
 | [2. Cheatsheet](#2-cheatsheet) | Stack, syntax, patterns — skim before the call |
 | [3. Technical Q&A](#3-technical-qa) | Mindmaps 10 min + full model answers (PySpark, DLT, DQ, **business Q15–Q25**) |
 | [4. Questions to ask](#4-questions-to-ask-the-lead-de) | Pick 2–3 for the end |
@@ -74,7 +75,7 @@ flowchart LR
 2. **Write from memory** the PySpark example in `src/interview_pyspark_example.py` on paper or a blank notebook (10 min).
 3. **Explain aloud** why `current_pipeline.py` is insufficient and how DLT fixes it (5 min).
 4. **Prepare 3 questions** for the Lead DE ([§4](#4-questions-to-ask-the-lead-de)).
-5. **Skim** [§1.6 Perrine Q&A](#16-perrine-tcheeko-lead-de--estimate-qa), [§1.7 Viet Q&A](#17-vu-tran-viet-em-platform-vn--estimate-qa), and [§1.8 Business](#18-socotec-business-products--what-they-care-about) (5 min).
+5. **Skim** [§1.6 Perrine Q&A](#16-perrine-tcheeko-lead-de--estimate-qa), [§1.7 Viet Q&A](#17-vu-tran-viet-em-platform-vn--estimate-qa), [§1.8 Business](#18-socotec-business-products--what-they-care-about), and **memorize 5** [French phrases](#19-friendly-french-phrases-perrine--viet) (5 min).
 
 ### 1.6 Perrine TCHEEKO (Lead DE) — estimate Q&A
 
@@ -188,6 +189,114 @@ SOCOTEC is a **global TIC group** (Testing, Inspection, Certification): a **trus
 3. Explain **Cementys** in one sentence and link to Silver/Gold.  
 4. Answer: *"Why SOCOTEC Data Hub?"* — international lakehouse, productized compliance/risk data, GenAI on certified metrics.  
 5. Skim README §1.4–1.10 for numbers and acquisitions context.
+
+---
+
+### 1.9 Friendly French phrases (Perrine & Viet)
+
+> **Context:** Perrine is French; Viet is a **French graduate** — both may appreciate light French for rapport. **Technical answers stay in English** (or French only if they switch). Use **vous** (polite professional). **2–4 short phrases per interview** is enough — warm, not a language test.
+
+#### 1.9.1 Ground rules
+
+| Do | Don't |
+|----|-------|
+| Say one French line, then continue in clear **English** for tech | Pretend fluent French on deep Spark questions |
+| Smile, slow down, accept correction gracefully | Use **tu** unless they explicitly say *« on peut se tutoyer »* |
+| Use phrases below **verbatim** (memorize 5–6) | Apologize repeatedly for accent — one *« désolé »* is fine, then move on |
+| Ask at start: *« Est-ce que vous préférez qu’on reste en anglais ? »* | Force French if they answer in English only |
+
+**If stuck in French:** *« Je peux reformuler en anglais si c’est plus clair. »*
+
+#### 1.9.2 Start of call — greetings
+
+| French | Meaning | When |
+|--------|---------|------|
+| **Bonjour Madame Tcheeko, bonjour Monsieur Tran-Viet.** | Hello (formal) | Video on, first words |
+| **Bonjour à vous deux, merci de me recevoir aujourd’hui.** | Hello both, thanks for having me | Panel intro |
+| **Enchanté(e).** | Nice to meet you | After introductions |
+| **Comment allez-vous ?** / **Ça va ?** | How are you? | Small talk (they may say *« ça va et vous ? »* → **Très bien, merci.**) |
+| **Est-ce que vous préférez qu’on reste en anglais, ou un mélange français–anglais ?** | Do you prefer English or a mix? | Shows respect; lets them choose |
+| **J’ai préparé un petit repo de cas — je peux vous le partager si vous voulez.** | I prepared a small case repo — happy to share | When opening screen share |
+
+#### 1.9.3 During the interview — friendly reactions
+
+| French | Meaning | When |
+|--------|---------|------|
+| **Très bien, merci.** | Very well, thanks | After *« ça va ? »* |
+| **D’accord, parfait.** | OK, perfect | They explain process |
+| **Oui, tout à fait.** | Yes, exactly | You agree with their point |
+| **C’est clair.** | That’s clear | After their architecture explanation |
+| **Bonne question.** | Good question | They ask something sharp (compliment) |
+| **Un instant, je réfléchis…** | One moment, I’m thinking… | Before live coding |
+| **Je vais écrire ça étape par étape.** | I’ll write this step by step | Live PySpark |
+| **Là, je filtre avant le join — comme on ferait en prod.** | Here I filter before the join — as in prod | Tie to your Lead phrases |
+| **Ah oui, bon point.** | Ah yes, good point | They correct you |
+| **Merci pour la précision.** | Thanks for clarifying | After feedback |
+| **Si je comprends bien…** | If I understand correctly… | Before paraphrasing their requirement |
+
+#### 1.9.4 SOCOTEC / repo / teamwork
+
+| French | Meaning | When |
+|--------|---------|------|
+| **J’ai beaucoup regardé le métier TIC et le Data Hub — c’est passionnant.** | I studied the TIC business and Data Hub a lot — fascinating | Motivation, not flattery |
+| **Le lien avec Green Trust et le monitoring au Vietnam m’intéresse beaucoup.** | Green Trust + VN monitoring interest me | With Viet in the room |
+| **Dans mon repo, j’ai mis un pipeline DLT avec des expectations — je peux vous montrer.** | In my repo I have a DLT pipeline with expectations | Screen share |
+| **Je travaille bien en équipe — la doc et les revues de code, c’est important pour moi.** | I work well in teams — docs and code review matter | Matches Perrine’s team norm |
+| **Pour le Vietnam, l’idée c’est une seule vérité Silver/Gold entre Massy et les équipes terrain.** | For VN: one Silver/Gold truth between Massy and field teams | Bridge to Viet |
+| **Je suis motivé(e) par le hub de Massy et l’échelle internationale.** | Motivated by Massy hub and international scale | Why SOCOTEC |
+
+#### 1.9.5 If conversation touches Vietnam / Cementys
+
+| French | Meaning | When |
+|--------|---------|------|
+| **Belle synergie entre le hub data et Cementys.** | Nice synergy between data hub and Cementys | Compliment VN–global |
+| **Les données de monitoring, c’est un flux continu — pas comme un PDF d’inspection.** | Monitoring data is continuous — not like an inspection PDF | Your monitoring vs TIC point |
+| **J’aimerais bien collaborer avec l’équipe au Vietnam sur les SLA.** | I’d like to work with the VN team on SLAs | Collaboration signal |
+
+#### 1.9.6 End of call — warm close
+
+| French | Meaning | When |
+|--------|---------|------|
+| **Merci beaucoup pour votre temps et vos questions.** | Thank you very much for your time | Standard close |
+| **C’était un échange très enrichissant.** | It was a very enriching discussion | After good back-and-forth |
+| **J’ai vraiment apprécié l’échange avec vous.** | I really enjoyed talking with you | Sincere, brief |
+| **Au plaisir de vous revoir / de continuer la discussion.** | Hope to see you again / continue | Before leaving |
+| **Bonne journée à vous.** / **Bonne fin de journée.** | Have a good day | Sign-off |
+| **À bientôt, j’espère.** | See you soon, I hope | If positive tone |
+
+**Questions to ask in French (pick one):**
+
+| French | Meaning |
+|--------|---------|
+| **À quoi ressemble le succès dans les 90 premiers jours pour ce poste ?** | What does success look like in the first 90 days? |
+| **Comment l’équipe gère les contrats de données aujourd’hui — CI, DLT, catalogue ?** | How does the team enforce data contracts today? |
+| **Quelle part batch / streaming dans le lakehouse international ?** | What’s the batch vs streaming split? |
+
+#### 1.9.7 Mini pronunciation (read aloud 3× before call)
+
+| Phrase | Rough sound |
+|--------|-------------|
+| Bonjour | bohn-ZHOOR |
+| Enchanté(e) | ahn-shahn-TAY |
+| Merci beaucoup | mehr-SEE boh-KOO |
+| D’accord | dah-KOR |
+| Est-ce que | ESS-kuh |
+| Je réfléchis | zhuh ray-flay-SHEE |
+| Tout à fait | too tah FAY |
+| Data / hub / pipeline | Often kept **in English** by French tech teams — natural |
+
+#### 1.9.8 Suggested flow (example)
+
+1. **Bonjour, enchanté. Comment allez-vous ?**  
+2. **Est-ce que vous préférez qu’on reste en anglais ?** → then **English** for PySpark.  
+3. Midway, one **Bonne question** or **Si je comprends bien…**  
+4. Close: **Merci beaucoup pour votre temps — c’était très enrichissant. Bonne journée.**
+
+#### 1.9.9 One-liner if they appreciate the effort
+
+> **Mon français n’est pas parfait, mais je voulais vous dire bonjour dans votre langue — le technique, par contre, je le fais mieux en anglais.**
+
+*My French isn’t perfect, but I wanted to say hello in your language — technical stuff I do better in English.*
 
 ---
 
@@ -397,6 +506,7 @@ Gold marts: `gold_asset_risk_kpi`, `gold_compliance_kpi`, `gold_maintenance_sla_
 - [ ] Prepare 2 questions for Lead DE  
 - [ ] **Business:** TIC + scale (15k / 250k / 26) + Green Trust + one VN/Cementys sentence  
 - [ ] **Business:** 2 service lines → 1 data product each (see [§1.8.2](#182-service-lines--data-products-map-for-de-answers))  
+- [ ] **French:** Bonjour + language preference question + Merci beaucoup close ([§1.9](#19-friendly-french-phrases-perrine--viet))  
 
 ---
 
