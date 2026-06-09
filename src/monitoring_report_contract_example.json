@@ -1,0 +1,45 @@
+{
+  "product_name": "monitoring_periodic_report",
+  "version": "1.0.0",
+  "owner_team": "socotec-vn-monitoring",
+  "description": "Multi-cadence monitoring report for France-coordinated sensor projects",
+  "sla": {
+    "daily": {
+      "refresh_frequency": "daily",
+      "delivery_by_utc": "06:00",
+      "availability": "99.5%"
+    },
+    "weekly": {
+      "refresh_frequency": "weekly",
+      "delivery_day": "monday",
+      "delivery_by_utc": "08:00",
+      "availability": "99.5%"
+    },
+    "monthly": {
+      "refresh_frequency": "monthly",
+      "delivery_day": 1,
+      "delivery_by_utc": "10:00",
+      "availability": "99.0%"
+    }
+  },
+  "fields": [
+    { "name": "project_id", "type": "string", "nullable": false },
+    { "name": "report_period", "type": "string", "nullable": false, "enum": ["daily", "weekly", "monthly"] },
+    { "name": "period_start", "type": "date", "nullable": false },
+    { "name": "period_end", "type": "date", "nullable": false },
+    { "name": "total_anomalies", "type": "long", "nullable": false },
+    { "name": "sensors_with_anomalies", "type": "long", "nullable": false },
+    { "name": "offline_sensor_count", "type": "long", "nullable": false },
+    { "name": "data_quality_status", "type": "string", "nullable": false, "enum": ["PASS", "FAIL"] },
+    { "name": "published_at", "type": "timestamp", "nullable": false }
+  ],
+  "quality_gates": {
+    "block_publish_if_offline_sensors": true,
+    "min_completeness_pct": 95,
+    "max_stale_sensor_hours": 2
+  },
+  "security": {
+    "contains_pii": false,
+    "access_policy": "rbac_project_scope"
+  }
+}

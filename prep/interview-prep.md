@@ -51,6 +51,8 @@ Live-coding code file: [`src/interview_pyspark_example.py`](../src/interview_pys
 | "How would you improve it?" | `src/proposed_dlt_pipeline.py` — expectations, pseudonymization, Gold aggregation |
 | "How do you validate Gold tables?" | `src/proposed_data_quality_checks.sql` |
 | "How do external clients consume data?" | `src/api_contract_example.json` |
+| "How does VN monitoring ops work?" | README §1.9.1 + §2.5 · `src/monitoring_pipeline_example.py` |
+| "Periodic reports and sensor DQ?" | `src/monitoring_report_contract_example.json` · `src/monitoring_data_quality_checks.sql` |
 | Live PySpark coding | `src/interview_pyspark_example.py` + [Cheatsheet § PySpark](#pyspark--aggregates-and-filters-interview-pattern) |
 
 ### 1.4 Likely interview flow
@@ -110,6 +112,9 @@ flowchart LR
 | How do you **explain a pipeline or data issue** to non-data engineers? | Business impact first (e.g. “dashboard stale 26h → field teams see old risk scores”), one diagram Bronze→Gold, one decision needed — no Spark jargon unless they ask. |
 | What do you know about **SOCOTEC’s business**? | Global **TIC** leader (~15k staff, 250k clients, 26 countries); trusted third party across construction, infrastructure, industry; strategic push on **Green Trust** (monitoring, ESG) and **BIM & Data**; Data Hub productizes inspection/compliance/monitoring data — see [§1.8](#18-socotec-business-products--what-they-care-about). |
 | Why **monitoring data** is different from inspection PDFs? | Higher frequency time-series, 24/7 SLA, anomaly detection; needs streaming/micro-batch Bronze + asset alignment in Silver; Gold freshness drives field response — Cementys VN model. |
+| How does VN team work with **France** on monitoring? | France clients define sensor config (thresholds, placement); VN ops deploys, ingests raw data, runs DQ + anomaly analysis, delivers **periodic reports** (daily/weekly/monthly) — config changes tracked in `silver_sensor_config` with audit. |
+| What does **equipment health check** mean in data terms? | `last_seen_at`, battery, connectivity per sensor; offline sensors flagged in `gold_sensor_health_kpi`; **block report publish** if critical sensors offline — see `monitoring_data_quality_checks.sql` check #2. |
+| How would you support **periodic reports** at different cadences? | Same Silver facts → Gold rollups partitioned by `report_period`; separate SLA per cadence in contract JSON; Airflow sensors trigger daily/weekly/monthly jobs — `monitoring_report_contract_example.json`. |
 
 ---
 
@@ -146,13 +151,31 @@ SOCOTEC is a **global TIC group** (Testing, Inspection, Certification): a **trus
 
 #### 1.8.4 Vietnam & global monitoring (for Viet + Perrine)
 
-**Cementys (SOCOTEC Vietnam)** — public scope:
+**SOCOTEC Vietnam** — public positioning (corporate site + VN job posts, 2025–2026):
 
-- Structural health monitoring (transport, energy infrastructure)
-- Environmental: noise, vibration, water, geotechnical, topography
+- **Technical support platform** of SOCOTEC GROUP — expert TIC services for construction & infrastructure
+- Group scale: **15,000+ experts · 26 countries · 5 continents**
+- Service domains: construction, buildings & real estate, infrastructure, environment & safety, certification
+- **Cementys brand:** structural health monitoring (transport, energy), environmental (noise, vibration, water, geotechnical, topography)
 - Proprietary visualisation + **integrated digital platform** (ML, ageing analysis, maintenance SaaS)
+- **France ↔ Vietnam ops:** VN team processes monitoring data; coordinates with **France customers** on **sensor configuration**
 
 **Your bridge sentence:** *"Massy lakehouse standardizes client and asset master data; Vietnam streams monitoring into the same Silver/Gold contracts so global dashboards and VN 24/7 ops share one truth."*
+
+#### 1.8.4b VN Monitoring Data Intern JD — operational workflow (2025–2026)
+
+Two identical public postings for **Thực tập sinh Quản Lý Dữ Liệu Quan Trắc** reveal the day-to-day data ops that DE architecture must enable:
+
+| Task (VN intern) | Lakehouse mapping | Repo reference |
+|------------------|-------------------|----------------|
+| Check monitoring **equipment health** | `gold_sensor_health_kpi` — offline / low-battery flags | `monitoring_pipeline_example.py` |
+| Coordinate with **France** on **sensor config** | `silver_sensor_config` — thresholds, calibration, audit trail | README §1.9.1 sequence diagram |
+| Process **raw collected data** | Bronze append (MQTT/API/file) → Silver validation | README §2.5 |
+| **Analyze** for issues / **anomalies** | `gold_sensor_anomaly_kpi` — threshold breach + statistical outlier | `monitoring_pipeline_example.py` |
+| **Periodic reports** (day/week/month) | `gold_monitoring_report_{daily,weekly,monthly}` | `monitoring_report_contract_example.json` |
+| **Data quality** per project | Project-scoped DQ gates block report publish | `monitoring_data_quality_checks.sql` |
+
+**DE talking point for Viet:** *"Your VN monitoring ops team needs Gold tables they can trust for 24/7 dashboards and scheduled France client reports — I'd build project-scoped DQ so offline sensors block a daily report sign-off."*
 
 #### 1.8.5 What the Lead DE / Data Hub likely demands (estimate)
 
@@ -177,6 +200,8 @@ SOCOTEC is a **global TIC group** (Testing, Inspection, Certification): a **trus
 | Acquisitions and data? | Labs, geodata, monitoring firms → more sources; need **Silver conformation** before client Gold. |
 | UAE / mega-project example? | Third-party design review, H&S, MEP on Louvre Abu Dhabi, Sea World — **evidence-heavy** compliance trail. |
 | Difference TIC vs Cementys monitoring? | TIC = episodic inspections/certificates; monitoring = **continuous** time-series + 24/7 SLA. |
+| What does SOCOTEC Vietnam do? | **Technical support platform** for group TIC projects — monitoring data ops, sensor config with France clients, periodic reports, project-scoped DQ. |
+| France ↔ VN monitoring workflow? | France: sensor config + client relationship; VN: equipment health, raw data processing, anomaly analysis, report delivery — see README §1.9.1 sequence diagram. |
 
 #### 1.8.7 Opening pitch — business line (optional 15 sec add-on)
 
@@ -317,7 +342,7 @@ SOCOTEC is a **global TIC group** (Testing, Inspection, Certification): a **trus
 
 ### TIC business — 15-second context
 
-**Testing, Inspection, Certification** — global leader, *trusted third party*, construction / infrastructure / industry / environment. **~15k employees · 250k clients · 26 countries.** Also: **Green Trust** (monitoring, ESG), **BIM & Data**, certification hubs in APAC. Data opportunity: inspection + compliance + **sensor monitoring** → **client products** (risk KPIs, APIs, ESG, predictive maintenance). **Data & AI Hub** (Massy) + international lakehouse on AWS/Databricks.
+**Testing, Inspection, Certification** — global leader, *trusted third party*, construction / infrastructure / industry / environment. **~15k experts · 250k clients · 26 countries · 5 continents.** Also: **Green Trust** (monitoring, ESG), **BIM & Data**, certification hubs in APAC. **VN platform:** monitoring data ops — equipment health, France sensor config, anomaly analysis, periodic reports (day/week/month). Data opportunity: inspection + compliance + **sensor monitoring** → **client products** (risk KPIs, APIs, ESG, predictive maintenance). **Data & AI Hub** (Massy) + international lakehouse on AWS/Databricks.
 
 ### SOCOTEC products & sectors (30-second)
 
@@ -326,7 +351,8 @@ SOCOTEC is a **global TIC group** (Testing, Inspection, Certification): a **trus
 | **Services** | Green Building, TIV, Specialty Engineering, Fire, Environment & Safety, Certification, Training |
 | **Sectors** | Construction, Real Estate, Infrastructure, Industry, Energy & Utilities |
 | **Digital** | BlueTrust Monitoring, structural/optic monitoring, Cementys platform (VN), FREEDA AI plans |
-| **Gold in repo** | `gold_asset_risk_kpi`, `gold_compliance_kpi`, `gold_maintenance_sla_kpi` |
+| **Gold in repo** | `gold_asset_risk_kpi`, `gold_compliance_kpi`, `gold_maintenance_sla_kpi`, `gold_sensor_anomaly_kpi`, `gold_monitoring_report_{daily,weekly,monthly}` |
+| **VN monitoring ops** | Equipment health → raw ingestion → anomaly flags → periodic reports → project DQ gates |
 
 ### Medallion layers
 

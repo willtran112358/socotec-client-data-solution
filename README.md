@@ -35,7 +35,7 @@ Overall assessment: **High potential**, especially for monetizable B2B analytics
 |--------|-------|
 | Positioning | Global leader in **Testing, Inspection, Certification (TIC)** for construction, infrastructure, and industry |
 | Tagline | *Building trust for a safer and sustainable world* |
-| Scale | ~**15,000** employees · **250,000** clients · **26** countries |
+| Scale | ~**15,000** experts · **250,000** clients · **26** countries · **5** continents |
 | Operating model | **Trusted third party** — public and private clients, full project lifecycle (design → operation → decommissioning) |
 
 **Strategic themes (corporate site):** Renewable energy · Sustainability · Smart cities · Industry 4.0 · **BIM & Data**
@@ -87,13 +87,19 @@ Overall assessment: **High potential**, especially for monetizable B2B analytics
 | **USA** | Building envelope, geotech, commissioning, dispute resolution | 1,700 experts, 40+ offices |
 | **Germany** | Building, infrastructure, EOD (Röhll & Koch), geodata (TRIGIS) | 1,500 employees, 38 locations |
 | **Spain / BAC** | Civil engineering inspection, labs in Catalonia | 850 employees |
-| **Vietnam (Cementys)** | **Structural health monitoring**, environmental services, digital platform | 1 office; ties to global monitoring + Data Hub |
+| **Vietnam** | **Technical support platform** (Cementys): structural/environmental monitoring, sensor ops, digital platform | VN team processes monitoring data; coordinates with **France** on sensor configuration |
 | **UAE** | Mega-projects (Louvre Abu Dhabi, Sea World, DEWA, Etihad Rail) | Third-party design review, MEP, H&S |
 | **APAC certification** | Singapore, Japan, Thailand, Philippines — ISO, GHG, concrete/steel cert | Management-system audits |
 
-### 1.9 Vietnam — Cementys & Monitoring (Vu Tran-Viet Round)
+### 1.9 Vietnam — Technical Support Platform & Monitoring (Vu Tran-Viet Round)
 
-SOCOTEC Vietnam operates through **Cementys**, focused on **tech-enabled monitoring** (not generic TIC back-office):
+**SOCOTEC Vietnam** is the group's **technical support platform** in Southeast Asia — not a generic TIC back-office. Public positioning (corporate + VN job posts, 2025–2026):
+
+- **Mission:** deliver expert TIC services for construction and infrastructure projects; support high-quality client delivery through **monitoring data operations**
+- **Scale (group):** 15,000+ experts · 26 countries · 5 continents
+- **Service domains:** construction, buildings & real estate, infrastructure, environment & safety, certification
+
+**Cementys** (SOCOTEC Vietnam brand) — **tech-enabled monitoring**:
 
 - In-situ measurements: technical assessment, inspections, surveys
 - **Structural health monitoring** for transport and energy infrastructure
@@ -101,7 +107,38 @@ SOCOTEC Vietnam operates through **Cementys**, focused on **tech-enabled monitor
 - **Data visualisation**: proprietary survey/maintenance software, 24/7 on-call monitoring
 - **Digital platform**: data science, automated ageing analysis, maintenance SaaS, ML/AI
 
-**What they likely need from a DE:** reliable ingestion of high-frequency sensor streams, asset master alignment, SLA-backed Gold metrics for dashboards/BIM, clear ownership between Massy Data Hub and VN engineering.
+#### 1.9.1 Monitoring Data Operations (VN intern JD — operational model)
+
+Two identical public postings (2025–2026) for **Thực tập sinh Quản Lý Dữ Liệu Quan Trắc** describe the day-to-day data workflow that DE architecture must support:
+
+| Operational task | Data / engineering implication |
+|------------------|-------------------------------|
+| Check **monitoring equipment** health | `silver_sensor_health` — heartbeat, battery, connectivity, last-seen timestamps; alert on offline sensors |
+| Coordinate with **France** customers on **sensor configuration** | Config metadata in Silver (thresholds, sampling rate, calibration); audit trail for cross-border changes |
+| Process **raw collected data** | Bronze append-only landing (MQTT/API/file drops); schema-on-read with source lineage |
+| **Analyze** for potential issues / **anomalies** | Silver validation + Gold anomaly flags (threshold breach, statistical outlier, trend deviation) |
+| **Periodic reports** (daily, weekly, monthly) | Gold report marts partitioned by `report_period`; SLA per cadence — see `monitoring_report_contract_example.json` |
+| **Data quality** per project requirements | Project-scoped DQ rules (completeness, range, freshness); `monitoring_data_quality_checks.sql` |
+
+**France ↔ Vietnam collaboration pattern:**
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant FR as Client / SOCOTEC France
+    participant VN as SOCOTEC Vietnam (Monitoring Ops)
+    participant BR as Bronze (raw sensor feeds)
+    participant GO as Gold (reports + anomaly KPIs)
+
+    FR->>VN: Sensor config request (thresholds, placement)
+    VN->>FR: Config validation + deployment status
+    BR->>VN: Raw time-series ingestion
+    VN->>VN: Equipment health check + DQ gate
+    VN->>GO: Daily / weekly / monthly report generation
+    GO->>FR: Periodic client report delivery
+```
+
+**What they likely need from a DE:** reliable ingestion of high-frequency sensor streams, asset master alignment, SLA-backed Gold metrics for dashboards/BIM, project-scoped DQ, periodic report marts (day/week/month), and clear ownership between Massy Data Hub and VN monitoring engineering.
 
 ### 1.10 Data & AI Hub — Inferred Role Requirements
 
@@ -190,6 +227,25 @@ Current stack direction in job posts and profiles indicates:
 
 ### 2.3 Reference Architecture (Text)
 1. Sources -> 2. Ingestion (CDC/Batch/Streaming) -> 3. Bronze (S3/Delta) -> 4. Silver transformations (Spark/dbt) -> 5. Gold marts + feature sets -> 6. Consumption (Power BI, Databricks SQL, APIs, GenAI assistant) -> 7. Governance/Monitoring across all layers.
+
+### 2.5 Monitoring Data Architecture (VN Operations — from intern JD)
+
+For **continuous monitoring** (vs episodic inspections), the VN team workflow maps to a dedicated pipeline path:
+
+| Layer | Monitoring-specific tables / logic |
+|-------|-----------------------------------|
+| **Bronze** | Raw sensor readings (MQTT/Kafka/API), equipment status pings, France-originated config exports |
+| **Silver** | `silver_sensor_readings` (validated, deduped), `silver_sensor_health` (connectivity, battery), `silver_sensor_config` (thresholds, calibration, project scope) |
+| **Gold** | `gold_sensor_anomaly_kpi` (threshold/outlier flags), `gold_monitoring_report_daily/weekly/monthly` (periodic aggregates per project) |
+| **Serving** | 24/7 monitoring dashboards, scheduled report delivery to France clients, alert webhooks |
+
+**Key design choices:**
+- **Project-scoped DQ** — each monitoring contract may define different freshness and completeness SLAs
+- **Multi-cadence Gold** — same Silver facts, different `report_period` rollups (day/week/month)
+- **Cross-border config lineage** — France sensor config changes tracked with `config_version` and `updated_by` for audit
+- **Equipment health as first-class entity** — offline sensors block report sign-off (operational gate before Gold publish)
+
+See: `src/monitoring_pipeline_example.py`, `src/monitoring_data_quality_checks.sql`, `src/monitoring_report_contract_example.json`
 
 ### 2.4 Architecture Visuals (Mermaid)
 ```mermaid
@@ -283,6 +339,9 @@ See files:
 - `src/proposed_dlt_pipeline.py` -> Medallion-style transformation with data quality expectations.
 - `src/proposed_data_quality_checks.sql` -> SQL quality checks for Gold marts.
 - `src/api_contract_example.json` -> Data product contract for external clients.
+- `src/monitoring_pipeline_example.py` -> Sensor health, anomaly flags, and periodic report aggregates (VN monitoring ops).
+- `src/monitoring_data_quality_checks.sql` -> Project-scoped DQ for monitoring Gold tables.
+- `src/monitoring_report_contract_example.json` -> Multi-cadence report SLA contract (daily/weekly/monthly).
 
 ### 3.3 Why This Engineering Proposal
 - Improves reliability: explicit contracts + quality gates.
@@ -568,7 +627,74 @@ erDiagram
     }
 ```
 
-### 4.3 Analytics and Client Reporting Layer
+### 4.4 Monitoring & Sensor Data (VN Operations)
+```mermaid
+erDiagram
+    PROJECT ||--o{ SENSOR : deploys
+    SENSOR ||--o{ SENSOR_READING : emits
+    SENSOR ||--o{ SENSOR_HEALTH_EVENT : reports
+    SENSOR ||--o{ SENSOR_CONFIG : has
+    PROJECT ||--o{ MONITORING_REPORT : produces
+
+    PROJECT {
+      string project_id PK
+      string customer_id FK
+      string country_code
+      string monitoring_sla_level
+      string report_cadence
+    }
+
+    SENSOR {
+      string sensor_id PK
+      string project_id FK
+      string asset_id FK
+      string sensor_type
+      string deployment_status
+      datetime last_seen_at
+    }
+
+    SENSOR_READING {
+      string reading_id PK
+      string sensor_id FK
+      datetime reading_ts
+      double value
+      string unit
+      string quality_flag
+    }
+
+    SENSOR_HEALTH_EVENT {
+      string event_id PK
+      string sensor_id FK
+      datetime event_ts
+      string status
+      double battery_pct
+      string connectivity
+    }
+
+    SENSOR_CONFIG {
+      string config_id PK
+      string sensor_id FK
+      string config_version
+      double threshold_min
+      double threshold_max
+      int sampling_interval_sec
+      string updated_by
+      datetime updated_at
+    }
+
+    MONITORING_REPORT {
+      string report_id PK
+      string project_id FK
+      string report_period
+      date period_start
+      date period_end
+      int anomaly_count
+      int offline_sensor_count
+      datetime published_at
+    }
+```
+
+### 4.5 Analytics and Client Reporting Layer
 ```mermaid
 flowchart TB
     INSPECTION[inspection facts] --> GOLD1[gold_asset_risk_kpi]
@@ -581,13 +707,18 @@ flowchart TB
     GOLD3 --> DASH3[Compliance Dashboard]
     GOLD1 --> API1[Client KPI API]
     GOLD3 --> API2[Client Compliance API]
+    SENSOR_READING[sensor readings] --> GOLD4[gold_sensor_anomaly_kpi]
+    SENSOR_HEALTH[sensor health events] --> GOLD4
+    GOLD4 --> GOLD5[gold_monitoring_report daily weekly monthly]
+    GOLD5 --> DASH4[Monitoring Dashboard 24/7]
+    GOLD5 --> RPT[Periodic Client Reports]
 
     classDef fact fill:#E3F2FD,stroke:#1E88E5,stroke-width:2px,color:#0D47A1;
     classDef gold fill:#F3E5F5,stroke:#8E24AA,stroke-width:2px,color:#4A148C;
     classDef cons fill:#FFF3E0,stroke:#FB8C00,stroke-width:2px,color:#E65100;
-    class INSPECTION,INSPECTION_FINDING,WORK_ORDER,COMPLIANCE_RESULT fact;
-    class GOLD1,GOLD2,GOLD3 gold;
-    class DASH1,DASH2,DASH3,API1,API2 cons;
+    class INSPECTION,INSPECTION_FINDING,WORK_ORDER,COMPLIANCE_RESULT,SENSOR_READING,SENSOR_HEALTH fact;
+    class GOLD1,GOLD2,GOLD3,GOLD4,GOLD5 gold;
+    class DASH1,DASH2,DASH3,DASH4,API1,API2,RPT cons;
 ```
 
 ## 5) Interview Prep (Lead DE technical round)
