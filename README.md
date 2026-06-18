@@ -2,6 +2,14 @@
 
 This repository proposes a practical data strategy and engineering blueprint for SOCOTEC's client-facing data platform, aligned with its TIC (Testing, Inspection, Certification) business and current Data & AI Hub direction.
 
+![SOCOTEC Trust & Tech](https://static.socotec.com/s3fs-public/2024-05/socotec-trust-tech.webp?itok=7muP2BKI)
+
+![BlueTrust Monitoring](https://static.socotec.com/s3fs-public/2025-09/bluetrust_monitoring.webp)
+
+![BIM & Data](https://static.socotec.com/s3fs-public/2024-05/accompagnement_bim_et_data-text.webp)
+
+> Hidden workspace note: interview prep material is now stored in the renamed hidden folder `.prep_hidden`.
+
 ## 1) Business
 
 ### 1.1 Current Business Model (TIC + Data-Driven Services)
@@ -227,6 +235,75 @@ Current stack direction in job posts and profiles indicates:
 
 ### 2.3 Reference Architecture (Text)
 1. Sources -> 2. Ingestion (CDC/Batch/Streaming) -> 3. Bronze (S3/Delta) -> 4. Silver transformations (Spark/dbt) -> 5. Gold marts + feature sets -> 6. Consumption (Power BI, Databricks SQL, APIs, GenAI assistant) -> 7. Governance/Monitoring across all layers.
+
+### 2.4 Architecture Overview
+This solution architecture is designed to solve SOCOTEC's current pain points by preserving raw monitoring lineage, enforcing sensor health SLAs, and delivering Gold-ready client metrics through governed API and dashboard layers.
+
+```mermaid
+flowchart LR
+    subgraph DataSources["Source & Monitoring Inputs"]
+      ERP[ERP / CRM / Asset Systems]
+      INS[Inspection Apps]
+      SENS[Sensor Streams / MQTT / Kafka]
+      EXT[Third-party / Open Data]
+    end
+    subgraph Ingest["Ingestion & Bronze"]
+      CDC[CDC + batch landing]
+      STREAM[Streaming landing]
+      FILE[File / API landing]
+    end
+    subgraph Silver["Silver & Trust"]
+      ARM[Asset / Site / Sensor Master]
+      VALID[Validation / DQ / Enrichment]
+      CFG[Config + Threshold Lineage]
+    end
+    subgraph Gold["Gold Products"]
+      KPI[Risk & Compliance KPI Marts]
+      MON[Monitoring Reports & Alerts]
+      API[Client Data APIs]
+      BI[Power BI / Semantics]
+    end
+    subgraph Governance["Governance / Observability"]
+      DQ[Data Quality]
+      LINE[Lineage / Catalog]
+      SLA[SLA Monitoring]
+      SEC[Access / PII Control]
+    end
+    ERP --> CDC
+    INS --> CDC
+    SENS --> STREAM
+    EXT --> FILE
+    CDC --> ARM
+    STREAM --> VALID
+    FILE --> VALID
+    ARM --> KPI
+    VALID --> MON
+    CFG --> MON
+    KPI --> API
+    KPI --> BI
+    MON --> API
+    DQ --> ARM
+    DQ --> VALID
+    DQ --> KPI
+    LINE --> ARM
+    LINE --> KPI
+    SLA -.-> KPI
+    SEC -.-> API
+    SEC -.-> BI
+```
+
+```mermaid
+flowchart LR
+    Pain1[Raw sensor and inspection silos] --> Solution1[Bronze lineage + unified asset master]
+    Pain2[Manual sensor config handover] --> Solution2[Silver config tracking + threshold history]
+    Pain3[Slow report delivery] --> Solution3[Gold periodic report marts]
+    Pain4[Opaque governance] --> Solution4[Governed catalog + SLA observability]
+
+    classDef pain fill:#FFEBEE,stroke:#C62828,stroke-width:2px,color:#B71C1C;
+    classDef sol fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1B5E20;
+    class Pain1,Pain2,Pain3,Pain4 pain;
+    class Solution1,Solution2,Solution3,Solution4 sol;
+```
 
 ### 2.5 Monitoring Data Architecture (VN Operations — from intern JD)
 
@@ -727,7 +804,7 @@ Optional materials for SOCOTEC Data Engineer interview preparation:
 
 | Path | Contents |
 |------|----------|
-| [`prep/interview-prep.md`](prep/interview-prep.md) | **All-in-one guide** — strategy, **§1.8 business**, **§1.9 friendly French**, cheatsheet, DE + business Q&A, mindmaps |
+| [`.prep_hidden/interview-prep.md`](.prep_hidden/interview-prep.md) | **All-in-one guide** — strategy, **§1.8 business**, **§1.9 friendly French**, cheatsheet, DE + business Q&A, mindmaps |
 | [`src/interview_pyspark_example.py`](src/interview_pyspark_example.py) | Live-coding reference (aggregates + filters) |
 
 Reported interview topic (Glassdoor, Dec 2025): **PySpark query with aggregates and filters** — see prep guide §2 Cheatsheet and example file.
