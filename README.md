@@ -115,7 +115,7 @@ Overall assessment: **High potential**, especially for monetizable B2B analytics
 - **Data visualisation**: proprietary survey/maintenance software, 24/7 on-call monitoring
 - **Digital platform**: data science, automated ageing analysis, maintenance SaaS, ML/AI
 
-#### 1.9.1 Monitoring Data Operations (VN intern JD — operational model)
+#### 1.9.1 Monitoring Data Operations (VN operations model)
 
 Two identical public postings (2025–2026) for **Thực tập sinh Quản Lý Dữ Liệu Quan Trắc** describe the day-to-day data workflow that DE architecture must support:
 
@@ -195,7 +195,7 @@ flowchart TB
 
 ## 2) Architecture
 
-### 2.1 Current Data Solution (Likely Baseline from JD Context)
+### 2.1 Current Data Solution (Likely baseline from public job context)
 Current stack direction in job posts and profiles indicates:
 - Cloud: AWS-first data platform.
 - Lakehouse: Databricks + Delta Lake + S3.
@@ -305,7 +305,7 @@ flowchart LR
     class Solution1,Solution2,Solution3,Solution4 sol;
 ```
 
-### 2.5 Monitoring Data Architecture (VN Operations — from intern JD)
+### 2.5 Monitoring Data Architecture (VN Operations)
 
 For **continuous monitoring** (vs episodic inspections), the VN team workflow maps to a dedicated pipeline path:
 
