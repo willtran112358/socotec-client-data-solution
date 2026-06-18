@@ -1,6 +1,6 @@
 # SOCOTEC Client Data Solution
 
-This repository proposes a practical data strategy and engineering blueprint for SOCOTEC's client-facing data platform, aligned with its TIC (Testing, Inspection, Certification) business and current Data & AI Hub direction.
+Practical data strategy and engineering blueprint for SOCOTEC's client-facing monitoring and TIC data products.
 
 ![SOCOTEC Trust & Tech](https://static.socotec.com/s3fs-public/2024-05/socotec-trust-tech.webp?itok=7muP2BKI)
 
@@ -8,7 +8,7 @@ This repository proposes a practical data strategy and engineering blueprint for
 
 ![BIM & Data](https://static.socotec.com/s3fs-public/2024-05/accompagnement_bim_et_data-text.webp)
 
-> Hidden workspace note: interview prep material is now stored in the renamed hidden folder `.prep_hidden`.
+> Optional prep content is now stored in `.prep_hidden/`.
 
 ## 1) Business
 
@@ -237,7 +237,7 @@ Current stack direction in job posts and profiles indicates:
 1. Sources -> 2. Ingestion (CDC/Batch/Streaming) -> 3. Bronze (S3/Delta) -> 4. Silver transformations (Spark/dbt) -> 5. Gold marts + feature sets -> 6. Consumption (Power BI, Databricks SQL, APIs, GenAI assistant) -> 7. Governance/Monitoring across all layers.
 
 ### 2.4 Architecture Overview
-This solution architecture is designed to solve SOCOTEC's current pain points by preserving raw monitoring lineage, enforcing sensor health SLAs, and delivering Gold-ready client metrics through governed API and dashboard layers.
+This architecture solves SOCOTEC's current pain points with raw lineage, sensor SLA tracking, and governed client metrics.
 
 ```mermaid
 flowchart LR
@@ -705,71 +705,18 @@ erDiagram
 ```
 
 ### 4.4 Monitoring & Sensor Data (VN Operations)
+Monitoring data is captured through projects, sensors, readings, health checks, configs, and reports.
+
 ```mermaid
-erDiagram
-    PROJECT ||--o{ SENSOR : deploys
-    SENSOR ||--o{ SENSOR_READING : emits
-    SENSOR ||--o{ SENSOR_HEALTH_EVENT : reports
-    SENSOR ||--o{ SENSOR_CONFIG : has
-    PROJECT ||--o{ MONITORING_REPORT : produces
+flowchart TB
+    PROJECT[Project] --> SENSOR[Sensor]
+    SENSOR --> SENSOR_READING[Sensor Reading]
+    SENSOR --> SENSOR_HEALTH_EVENT[Sensor Health Event]
+    SENSOR --> SENSOR_CONFIG[Sensor Config]
+    PROJECT --> MONITORING_REPORT[Monitoring Report]
 
-    PROJECT {
-      string project_id PK
-      string customer_id FK
-      string country_code
-      string monitoring_sla_level
-      string report_cadence
-    }
-
-    SENSOR {
-      string sensor_id PK
-      string project_id FK
-      string asset_id FK
-      string sensor_type
-      string deployment_status
-      datetime last_seen_at
-    }
-
-    SENSOR_READING {
-      string reading_id PK
-      string sensor_id FK
-      datetime reading_ts
-      double value
-      string unit
-      string quality_flag
-    }
-
-    SENSOR_HEALTH_EVENT {
-      string event_id PK
-      string sensor_id FK
-      datetime event_ts
-      string status
-      double battery_pct
-      string connectivity
-    }
-
-    SENSOR_CONFIG {
-      string config_id PK
-      string sensor_id FK
-      string config_version
-      double threshold_min
-      double threshold_max
-      int sampling_interval_sec
-      string updated_by
-      datetime updated_at
-    }
-
-    MONITORING_REPORT {
-      string report_id PK
-      string project_id FK
-      string report_period
-      date period_start
-      date period_end
-      int anomaly_count
-      int offline_sensor_count
-      datetime published_at
-    }
-```
+    classDef entity fill:#E3F2FD,stroke:#1565C0,stroke-width:1px,color:#0D47A1;
+    class PROJECT,SENSOR,SENSOR_READING,SENSOR_HEALTH_EVENT,SENSOR_CONFIG,MONITORING_REPORT entity;
 
 ### 4.5 Analytics and Client Reporting Layer
 ```mermaid
